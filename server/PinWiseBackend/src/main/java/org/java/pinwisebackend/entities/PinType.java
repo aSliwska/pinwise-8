@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,9 +20,17 @@ public class PinType {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "id_pin_type")
-    private Categories categories;
+    @ManyToMany
+    @JoinTable(
+            name = "categories"
+            , joinColumns = {
+                    @JoinColumn(name = "id_pin_type")
+                    }
+                    ,inverseJoinColumns = {
+                    @JoinColumn(name = "id_pin")
+            }
+    )
+    private List<Pin> pins;
 
     @Column(name = "category", nullable = false)
     private String category;

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -20,15 +22,11 @@ public class Pin {
 
     @ManyToOne
     @MapsId
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
-
-    @Column(name = "nameof", nullable = false)
-    private String nameOf;
-
-    @Column(name = "category")
-    private String category;
+    @ManyToMany(mappedBy = "pins")
+    private List<PinType> pinTypes;
 
     @Column(name = "coordinatex")
     private Double coordinateX;
