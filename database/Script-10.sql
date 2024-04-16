@@ -43,8 +43,11 @@ create table pinwise.categories(
 
 
 --TODO: uzyc pgcrypto by szyfrować i deszyfrować hasła
-
-
+--UWAGA DO BACKENDU!!! PRZY DODAWANIU REKORDU:
+--INSERT INTO pinwise.user VALUES (username, email, crypt('new password', gen_salt('bf')), ...)
+--przy zmianie hasła również
+--UPDATE ... SET password = crypt('new password', gen_salt('bf'));
+--przy logowaniu SELECT (password = crypt('entered password', password)) AS pswmatch FROM ... -> powinno zwracać true;
 -- na razie tylko administrator może zmienić swój nickname, to może być jeszcze zmienione
 CREATE OR REPLACE FUNCTION pinwise.check_admin_permission()
 RETURNS TRIGGER AS $$
@@ -57,5 +60,35 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER check_admin_permission_trigger
-BEFORE UPDATE OF username ON pinwise."user"
+BEFORE UPDATE OF username ON pinwise.user
 FOR EACH ROW EXECUTE FUNCTION pinwise.check_admin_permission();
+
+
+CREATE OR REPLACE FUNCTION pinwise.validate_email()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.email IS NOT NULL AND NEW.email !~* '^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$' THEN
+        RAISE EXCEPTION 'Invalid email address format!';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER validate_email_trigger
+BEFORE INSERT OR UPDATE OF email ON pinwise.user
+FOR EACH ROW EXECUTE FUNCTION pinwise.validate_email();
+
+
+
+--czas na przyklad!
+
+insert into pinwise.user (username, email, password, gender, age, education)
+values ('jusernejm', 'kkk@kkk.pl', crypt('hasłomasło', gen_salt('bf')), 'man', 13, 'srednie');
+
+select * from pinwise.user;
+
+SELECT (password = crypt('entered password', password)) AS pswmatch from pinwise.user p where p.username = 'jusernejm';
+SELECT (password = crypt('haslomaslo', password)) AS pswmatch from pinwise.user p where p.username = 'jusernejm';
+SELECT (password = crypt('hasłomasło', password)) AS pswmatch from pinwise.user p where p.username = 'jusernejm'; -- zwraca true
+
+
