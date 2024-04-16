@@ -22,7 +22,7 @@ public class Pin {
 
     @ManyToOne
     @MapsId
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToMany(mappedBy = "pins")

@@ -45,9 +45,7 @@ public class User {
     @Column(name = "isadmin")
     private Boolean isAdmin;
 
-    @OneToMany
-    @MapsId
-    @JoinColumn(name = "user_id")
+    @OneToMany(mappedBy = "user")
     private List<Pin> pin;
 
 }
