@@ -85,10 +85,17 @@ FOR EACH ROW EXECUTE FUNCTION pinwise.validate_email();
 insert into pinwise.user (username, email, password, gender, age, education)
 values ('jusernejm', 'kkk@kkk.pl', crypt('hasłomasło', gen_salt('bf')), 'man', 13, 'srednie');
 
+--insert into pinwise.user (username, email, password, gender, age, education)
+--values ('jusernejm', 'a@kkk.pl', crypt('hasłomasło', gen_salt('bf')), 'man', 13, 'srednie'); --> error
+
+--insert into pinwise.user (username, email, password, gender, age, education)
+--values ('jwwwsernejm', 'kkk#ksddssdk.pfsfsl', crypt('hasłomasło', gen_salt('bf')), 'man', 13, 'srednie'); -->INVALID ADDRESS FORMAT
+
 select * from pinwise.user;
 
 SELECT (password = crypt('entered password', password)) AS pswmatch from pinwise.user p where p.username = 'jusernejm';
 SELECT (password = crypt('haslomaslo', password)) AS pswmatch from pinwise.user p where p.username = 'jusernejm';
 SELECT (password = crypt('hasłomasło', password)) AS pswmatch from pinwise.user p where p.username = 'jusernejm'; -- zwraca true
 
+DELETE from pinwise.user p where p.username ='jusernejm';
 
