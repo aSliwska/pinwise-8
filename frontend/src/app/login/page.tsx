@@ -19,7 +19,7 @@ export async function handleSubmit(event: React.FormEvent) {
     if (response.ok) {
       const { token } = await response.json();
       localStorage.setItem("token", token);
-      window.location.href = "/dashboard";
+      window.location.href = {`/profile/${user.id}`};
     } else {
       throw new Error("Invalid login");
     }
