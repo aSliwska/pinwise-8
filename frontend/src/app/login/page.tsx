@@ -39,20 +39,20 @@ export default function Home() {
             <div className="w-full">
               <div className="w-full mb-6">
                 <div className="flex justify-between w-full mb-4">
-                  <label htmlFor="email" className="color-text-off-white font-light">
+                  <label htmlFor="email" className="text-neutral-300 font-light">
                     Email
                   </label>
                 </div>
                 <input
                   id="email"
                   type="email"
-                  className="px-5 py-4 text-lg rounded-lg bg-white color-text-gray-dark w-full"
+                  className="px-5 py-4 text-lg rounded-lg bg-white text-neutral-600 w-full"
                   autoFocus={true}
                 />
               </div>
               <div className="self-stretch">
                 <div className="flex justify-between w-full mb-4">
-                  <label htmlFor="password" className="color-text-off-white font-light">
+                  <label htmlFor="password" className="text-neutral-300 font-light">
                     Hasło
                   </label>
                   <Link
@@ -65,7 +65,7 @@ export default function Home() {
                 <input
                   id="password"
                   type="password"
-                  className="px-5 py-4 text-lg rounded-lg bg-white color-text-gray-dark w-full"
+                  className="px-5 py-4 text-lg rounded-lg bg-white text-neutral-600 w-full"
                 />
               </div>
             </div>
