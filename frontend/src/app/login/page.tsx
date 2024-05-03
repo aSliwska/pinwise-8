@@ -2,13 +2,16 @@
 import exp from "constants";
 import Image from "next/image";
 import Link from "next/link";
+import { Input, Button, ConfigProviderProps } from 'antd';
 
 export async function handleSubmit(event: React.FormEvent) {
   event.preventDefault();
-  alert("Login");
-  /*const email = (event.target as HTMLFormElement).email.value;
+  const email = (event.target as HTMLFormElement).email.value;
   const password = (event.target as HTMLFormElement).password.value;
-  try {
+
+  alert("login: " + email + " " + password);
+
+  /*try {
     const response = await fetch("http://localhost:3000/api/login", {
       method: "POST",
       headers: {
@@ -28,10 +31,10 @@ export async function handleSubmit(event: React.FormEvent) {
   }*/
 }
 
-export default function Home() {
+export default function LoginPage() {
   return (
     <main className="flex min-h-full min-w-full flex-col items-center justify-between color-bg-gradient-light-gray">
-      <div className="flex min-h-full items-center justify-center color-bg-gradient-dark-gray w-3/5">
+      <div className="flex min-h-full items-center justify-center color-bg-gradient-dark-gray w-3/5 min-w-[500px]">
         <form style={{ minWidth: "60%" }} onSubmit={handleSubmit}>
           <div className="flex flex-col items-center justify-between gap-12 p-4 rounded-lg text-white">
             <div className="text-5xl font-bold">Zaloguj się</div>
@@ -43,12 +46,7 @@ export default function Home() {
                     Email
                   </label>
                 </div>
-                <input
-                  id="email"
-                  type="email"
-                  className="px-5 py-4 text-lg rounded-lg bg-white text-neutral-600 w-full"
-                  autoFocus={true}
-                />
+                <Input id="email" type="email" autoFocus={true}/>
               </div>
               <div className="self-stretch">
                 <div className="flex justify-between w-full mb-4">
@@ -57,22 +55,18 @@ export default function Home() {
                   </label>
                   <Link
                     href="/forgot-password"
-                    className="font-bold color-text-teal justify-between"
+                    className="font-semibold color-text-teal justify-between"
                   >
                     Zapomniałem/am hasła
                   </Link>
                 </div>
-                <input
-                  id="password"
-                  type="password"
-                  className="px-5 py-4 text-lg rounded-lg bg-white text-neutral-600 w-full"
-                />
+                <Input id="password" type="password"/>
               </div>
             </div>
 
-            <button className="self-stretch w-full color-bg-teal px-5 py-4 text-lg rounded-lg font-bold">
+            <Button type="primary" size="large" htmlType="submit" block style={{fontWeight: 700}}>
               Zaloguj
-            </button>
+            </Button>
           </div>
         </form>
       </div>

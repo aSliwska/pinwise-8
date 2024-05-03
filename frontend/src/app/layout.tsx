@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Inter, Amita } from "next/font/google";
 import "./globals.css";
 import Navigation from "./components/navigation";
-import { ConfigProvider, Tabs } from 'antd';
+import { AntdRegistry } from '@ant-design/nextjs-registry';
+import ThemeProvider from "./components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
-const amita = Amita({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "PinWise",
@@ -18,36 +18,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ConfigProvider direction="ltr" 
-    theme={{
-      token: {
-        colorPrimary: "#4CCAAE",
-        fontFamily: inter.style.fontFamily,
-        fontSize: 16,
-        borderRadius: 8,
-      },
-      components :{
-        Tabs: {
-          colorText: '#e5e5e5',
-          colorPrimaryHover: '#A3A3A3',
-          lineWidthBold: 3,
-          colorBorderSecondary: '#A3A3A3',
-        }
-      }
-    }}>
-      <html lang="en">
-        <body className={inter.className}>
-          <div className="flex flex-col h-screen w-screen max-h-screen">
-
-            <Navigation/>
-            
-            <div className="flex flex-1 w-screen h-screen">
-              {children}
+    <html lang="en">
+      <body className={inter.className}>
+        <ThemeProvider font={inter}>
+          <AntdRegistry>
+            <div className="flex flex-col h-screen w-screen max-h-screen">
+              <Navigation/>
+              
+              <div className="flex flex-1 w-screen h-screen">
+                {children}
+              </div>
             </div>
-
-          </div>
-        </body>
-      </html>
-    </ConfigProvider>
+          </AntdRegistry>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

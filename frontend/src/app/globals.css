@@ -65,6 +65,7 @@ input:-webkit-autofill:active {
 ::-webkit-scrollbar {
   /* width */
   width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -99,3 +100,6 @@ input:-webkit-autofill:active {
   background: linear-gradient(137deg, #4C4C4C 7.36%, #626262 100.35%);
 }
 
+.color-bg-gradient-gray-fade {
+  background: linear-gradient(92deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+}

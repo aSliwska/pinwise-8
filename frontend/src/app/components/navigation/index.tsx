@@ -6,7 +6,7 @@ import TopBar from "./topbar";
 import SideMenu from "./sidemenu";
 
 export default function Navigation() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const toggle = () => {
     setIsOpen(!isOpen);
   };
@@ -19,9 +19,7 @@ export default function Navigation() {
         <TopBar toggle={toggle}/>
       </div>
       
-      {(pathname == "/") && <SideMenu isOpen={isOpen}/>}
-      
-    </> // todo: heatmap link might differ
-    
+      {(pathname.substring(0, 4) == "/map") && <SideMenu isOpen={isOpen}/>}
+    </>
   );
 };
