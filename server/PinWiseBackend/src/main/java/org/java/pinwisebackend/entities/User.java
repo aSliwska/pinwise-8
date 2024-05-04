@@ -1,10 +1,8 @@
 package org.java.pinwisebackend.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.transaction.Transactional;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity(name = "user")
 @Table(name = "user")
+@EqualsAndHashCode(of = "id")
 public class User implements UserDetails {
 
     @Id
