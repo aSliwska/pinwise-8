@@ -1,9 +1,7 @@
 "use client";
-import exp from "constants";
-import Image from "next/image";
 import Link from "next/link";
 
-export async function handleSubmit(event: React.FormEvent) {
+async function handleSubmit(event: React.FormEvent) {
   event.preventDefault();
   alert("Login");
   /*const email = (event.target as HTMLFormElement).email.value;
