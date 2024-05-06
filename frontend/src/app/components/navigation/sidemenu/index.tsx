@@ -1,11 +1,12 @@
 import { Switch, Input, Tabs, Select } from 'antd';
-import type { MenuProps } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
-import { CloseOutlined, DownOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
+import { useAtomValue } from 'jotai';
+import { isMapSidemenuOpenAtom, userAtom } from '../../store';
 
 export async function handleSearch(event: React.FormEvent) {
   event.preventDefault();
@@ -28,13 +29,12 @@ export async function showHeatmap() {
   // todo: show heatmap
 }
 
-export default function SideMenu(props: { 
-  isOpen: boolean; 
-}) {
+export default function SideMenu() {
   const pathname = usePathname();
+  const isMapSidemenuOpen = useAtomValue(isMapSidemenuOpenAtom);
 
   return ( // todo: logged out user appearance
-    <div className={(props.isOpen? "" : "-translate-x-full") + " transition-transform duration-200 w-[400px] h-full pt-12 absolute z-0 color-bg-gradient-dark-gray divide-y divide-neutral-600 overflow-hidden"}>
+    <div className={(isMapSidemenuOpen? "" : "-translate-x-full") + " transition-transform duration-200 w-[400px] h-full pt-12 -translate-y-[48px] absolute z-[1] color-bg-gradient-dark-gray divide-y divide-neutral-600 overflow-hidden"}>
       {pathname == "/map" ? (<SearchMenu/>) : (<HeatmapMenu/>)}
     </div>
   );
@@ -46,9 +46,7 @@ function HeatmapMenu() {
     name: "Firma 0",
     logo: "/temp_rectangle.svg"
   });
-  const [user, setUser] = useState({
-    isAuthenticated: true
-  }); // TODO: fetch real data
+  const user = useAtomValue(userAtom);
   const handleTimePeriodChange = (value: string) => {
     alert("time period change");
     // todo: fetch filtered data
@@ -244,9 +242,7 @@ function SearchMenu() {
       logo: "/temp_rectangle.svg"
     },
   ]); // TODO: fetch companies and services
-  const [user, setUser] = useState({
-    isAuthenticated: false
-  }); // TODO: fetch real user
+  const user = useAtomValue(userAtom);
 
   return (
     <>

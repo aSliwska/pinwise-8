@@ -4,21 +4,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { Amita } from "next/font/google";
 import { usePathname } from 'next/navigation';
-import { useState } from "react";
+import { useAtomValue, useAtom } from "jotai";
+import { isMapSidemenuOpenAtom, userAtom } from "../../store";
 import { MenuOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 
 const amita = Amita({ weight: "400", subsets: ["latin"] });
 
-export default function TopBar (props: { 
-  toggle: () => void
-}) {
-  const [user, setUser] = useState({
-    isAuthenticated: true,
-    name: "TestUser",
-    id: 0
-  }); // TODO: fetch real user
-
+export default function TopBar() {
+  const user = useAtomValue(userAtom);
+  const [isMapSidemenuOpen, setIsMapSidemenuOpen] = useAtom(isMapSidemenuOpenAtom);
+  const toggleMapSidemenuOpen = () => { 
+    setIsMapSidemenuOpen(!isMapSidemenuOpen) 
+  };
   const pathname = usePathname();
 
   return (
@@ -34,7 +32,7 @@ export default function TopBar (props: {
             <div className={"text-neutral-400 text-sm"}>Powrót do mapy</div>
           </Link>
         ) : (
-          <button type="button" onClick={props.toggle} className="flex flex-row justify-start">
+          <button type="button" onClick={toggleMapSidemenuOpen} className="flex flex-row justify-start">
             <MenuOutlined style={{color: '#d4d4d4', fontSize: 20}}/>
           </button>
         )}
