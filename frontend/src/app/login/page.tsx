@@ -1,12 +1,15 @@
 "use client";
 import Link from "next/link";
+import { Input, Button, ConfigProviderProps } from 'antd';
 
 async function handleSubmit(event: React.FormEvent) {
   event.preventDefault();
-  alert("Login");
-  /*const email = (event.target as HTMLFormElement).email.value;
+  const email = (event.target as HTMLFormElement).email.value;
   const password = (event.target as HTMLFormElement).password.value;
-  try {
+
+  alert("login: " + email + " " + password);
+
+  /*try {
     const response = await fetch("http://localhost:3000/api/login", {
       method: "POST",
       headers: {
@@ -17,7 +20,7 @@ async function handleSubmit(event: React.FormEvent) {
     if (response.ok) {
       const { token } = await response.json();
       localStorage.setItem("token", token);
-      window.location.href = "/dashboard";
+      window.location.href = {`/profile/${user.id}`};
     } else {
       throw new Error("Invalid login");
     }
@@ -26,47 +29,42 @@ async function handleSubmit(event: React.FormEvent) {
   }*/
 }
 
-export default function Home() {
+export default function LoginPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between bg-neutral-600">
-      <div className="flex items-center justify-center bg-neutral-700 w-4/5 min-h-screen">
+    <main className="flex min-h-full min-w-full flex-col items-center justify-between color-bg-gradient-light-gray">
+      <div className="flex min-h-full items-center justify-center color-bg-gradient-dark-gray w-3/5 min-w-[500px]">
         <form style={{ minWidth: "60%" }} onSubmit={handleSubmit}>
-          <div className="flex flex-col items-center justify-between gap-4 p-4 rounded-lg text-white">
-            <div className="text-3xl font-bold mb-4">Zaloguj się</div>
+          <div className="flex flex-col items-center justify-between gap-12 p-4 rounded-lg text-white">
+            <div className="text-5xl font-bold">Zaloguj się</div>
+
             <div className="w-full">
-              <div className="flex justify-between w-full my-1">
-                <label htmlFor="email" className="text-xs">
-                  Email
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className=" text-xs text-teal-300 justify-between"
-                >
-                  Zapomniałem/am hasła
-                </Link>
+              <div className="w-full mb-6">
+                <div className="flex justify-between w-full mb-4">
+                  <label htmlFor="email" className="text-neutral-300 font-light">
+                    Email
+                  </label>
+                </div>
+                <Input id="email" type="email" autoFocus={true}/>
               </div>
-              <input
-                id="email"
-                type="email"
-                className="p-2 rounded-md bg-white text-black w-full"
-                autoFocus={true}
-              />
-            </div>
-            <div className="self-stretch">
-              <div className="my-1">
-                <label htmlFor="password" className="text-xs">
-                  Hasło
-                </label>
+              <div className="self-stretch">
+                <div className="flex justify-between w-full mb-4">
+                  <label htmlFor="password" className="text-neutral-300 font-light">
+                    Hasło
+                  </label>
+                  <Link
+                    href="/forgot-password"
+                    className="font-semibold color-text-teal justify-between"
+                  >
+                    Zapomniałem/am hasła
+                  </Link>
+                </div>
+                <Input id="password" type="password"/>
               </div>
-              <input
-                id="password"
-                type="password"
-                className="p-2 rounded-md bg-white text-black w-full"
-              />
             </div>
-            <button className="self-stretch w-full bg-teal-300 p-2 rounded-md font-bold mt-6">
+
+            <Button type="primary" size="large" htmlType="submit" block style={{fontWeight: 700}}>
               Zaloguj
-            </button>
+            </Button>
           </div>
         </form>
       </div>
