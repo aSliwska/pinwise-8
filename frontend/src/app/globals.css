@@ -125,3 +125,7 @@ input:-webkit-autofill:active {
 .leaflet-popup-tip {
   height: 0 !important;
 }
+
+.leaflet-fade-anim .leaflet-popup {
+  transition: none !important;
+}
