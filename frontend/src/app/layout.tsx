@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import TopBar from "./components/navigation/topbar";
+import TopBar from "@/components/navigation/topbar";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
-import ThemeProvider from "./components/theme-provider";
-import StoreProvider from "./components/store";
+import ThemeProvider from "@/components/theme-provider";
+import StoreProvider from "@/components/store";
 
 const inter = Inter({ subsets: ["latin"] });
 

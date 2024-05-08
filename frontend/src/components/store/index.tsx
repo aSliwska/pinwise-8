@@ -1,6 +1,6 @@
 "use client";
 
-import { Provider, atom } from 'jotai'
+import { Provider, atom } from 'jotai';
 
 export const userAtom = atom({
   isAuthenticated: true,

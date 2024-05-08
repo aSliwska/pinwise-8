@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import { CloseOutlined } from '@ant-design/icons';
 import { useAtomValue } from 'jotai';
-import { isMapSidemenuOpenAtom, userAtom } from '../../store';
+import { isMapSidemenuOpenAtom, userAtom } from '@/components/store';
 
 export async function handleSearch(event: React.FormEvent) {
   event.preventDefault();

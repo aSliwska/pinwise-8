@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Amita } from "next/font/google";
 import { usePathname } from 'next/navigation';
 import { useAtomValue, useAtom } from "jotai";
-import { isMapSidemenuOpenAtom, userAtom } from "../../store";
+import { isMapSidemenuOpenAtom, userAtom } from "@/components/store";
 import { MenuOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 

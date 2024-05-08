@@ -3,8 +3,8 @@
 import { Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
-import PinPopupContent from '../components/map/pin';
-import { LegacyRef, useCallback, useMemo, useRef, useState } from 'react';
+import PinPopupContent from '@/components/map/pin';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 export default function MapPage() {
   const markerIcon = new Icon({iconUrl: 'marker.svg', iconSize: [24, 40]});

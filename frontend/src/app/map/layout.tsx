@@ -2,7 +2,7 @@
 
 import { MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import SideMenu from '../components/navigation/sidemenu';
+import SideMenu from '@/components/navigation/sidemenu';
 
 export default function MapPage({
   children
