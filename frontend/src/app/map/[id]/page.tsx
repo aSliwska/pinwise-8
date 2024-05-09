@@ -1,6 +1,6 @@
 "use client";
 
-export default function Heatmap() {
+export default function HeatmapOverlay() {
   return (
     <>
     </>

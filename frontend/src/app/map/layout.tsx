@@ -28,6 +28,7 @@ export default function MapPage({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <ZoomControl position="bottomright" />
+
           {children}
         </MapContainer>
       </div>
