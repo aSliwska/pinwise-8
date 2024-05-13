@@ -3,9 +3,11 @@ import { Button, Input } from "antd";
 import { useState } from "react";
 import { RegisterPanel } from "@/app/register/registerPanel";
 import { PersonalDataPanel } from "@/app/register/personalDataPanel";
+import { EmailSentPanel } from "@/app/register/emailSentPanel";
+import { SuccessPanel } from "@/app/register/successPanel";
 
 export default function RegisterPage() {
-  const [mode, setMode] = useState<string>("register");
+  const [mode, setMode] = useState<string>("personalData");
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
   return (
@@ -21,6 +23,8 @@ export default function RegisterPage() {
           />
         )}
         {mode === "personalData" && <PersonalDataPanel setMode={setMode} />}
+        {mode === "emailSent" && <EmailSentPanel setMode={setMode} />}
+        {mode === "success" && <SuccessPanel />}
       </div>
     </main>
   );

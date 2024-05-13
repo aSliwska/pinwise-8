@@ -17,13 +17,7 @@ const PersonalDataPanel = ({ setMode }: PersonalDataPanelProps) => {
   return (
     <div className="flex flex-col justify-center">
       <div className=" flex mb-4">
-        <Button
-          type="primary"
-          size="small"
-          block
-          style={{ fontWeight: 700 }}
-          onClick={handleGoBack}
-        >
+        <Button style={{ fontWeight: 700 }} onClick={handleGoBack}>
           &larr; Go Back
         </Button>
       </div>
@@ -85,7 +79,15 @@ const PersonalDataPanel = ({ setMode }: PersonalDataPanelProps) => {
             </tbody>
           </table>
 
-          <Button type="primary" size="large" block style={{ fontWeight: 700 }}>
+          <Button
+            type="primary"
+            size="large"
+            block
+            style={{ fontWeight: 700 }}
+            onClick={() => {
+              setMode("emailSent");
+            }}
+          >
             Załóż konto
           </Button>
         </div>
