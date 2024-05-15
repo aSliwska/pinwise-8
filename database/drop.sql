@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS pinwise.categories;
 DROP TABLE IF EXISTS pinwise.pin_type;
 DROP TABLE IF EXISTS pinwise.pin;
 DROP TABLE IF EXISTS pinwise.user;
+DROP TABLE IF EXISTS pinwise.service;
 
 -- Drop triggers
 DROP TRIGGER IF EXISTS check_admin_permission_trigger ON pinwise.user;
