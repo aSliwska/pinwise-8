@@ -23,6 +23,40 @@ VALUES
 ('Malgorzata', crypt('password20', gen_salt('bf')), 'malgorzata@example.com', 'Female', 70, 'Postgraduate', true, false);
 
 --2
+INSERT INTO pinwise.service (name, tag_key, tag_value, icon_name) VALUES 
+('Sklep', 'category', 'shop', 'shop.png'),
+('Fryzjer', 'category', 'hairdresser', 'hairdresser.png'),
+('Kawiarnia', 'category', 'cafe', 'cafe.png'),
+('Restauracja', 'category', 'restaurant', 'restaurant.png'),
+('Kino', 'category', 'cinema', 'cinema.png'),
+('Teatr', 'category', 'theatre', 'theatre.png'),
+('Klub', 'category', 'club', 'club.png'),
+('Księgarnia', 'category', 'bookstore', 'bookstore.png'),
+('Apteka', 'category', 'pharmacy', 'pharmacy.png'),
+('Szpital', 'category', 'hospital', 'hospital.png'),
+('Przychodnia', 'category', 'clinic', 'clinic.png'),
+('Szkoła', 'category', 'school', 'school.png'),
+('Uniwersytet', 'category', 'university', 'university.png'),
+('Bank', 'category', 'bank', 'bank.png'),
+('Stacja benzynowa', 'category', 'gas_station', 'gas_station.png'),
+('Parking', 'category', 'parking', 'parking.png'),
+('Przystanek', 'category', 'bus_stop', 'bus_stop.png'),
+('Stacja kolejowa', 'category', 'train_station', 'train_station.png'),
+('Lotnisko', 'category', 'airport', 'airport.png'),
+('Muzeum', 'category', 'museum', 'museum.png'),
+('Biblioteka', 'category', 'library', 'library.png'),
+('Park', 'category', 'park', 'park.png'),
+('Plac zabaw', 'category', 'playground', 'playground.png'),
+('Stadion', 'category', 'stadium', 'stadium.png'),
+('Basen', 'category', 'swimming_pool', 'swimming_pool.png'),
+('Kort tenisowy', 'category', 'tennis_court', 'tennis_court.png'),
+('Siłownia', 'category', 'gym', 'gym.png'),
+('Klub fitness', 'category', 'fitness_club', 'fitness_club.png'),
+('Klub sportowy', 'category', 'sports_club', 'sports_club.png'),
+('Klub sportowy', 'category', 'sports_club', 'sports_club.png');
+
+
+--3
 INSERT INTO pinwise.pin_type (category, nameof) VALUES 
 ('Firma', 'Biedronka'),
 ('Usluga', 'Usluga sprzatająca'),
@@ -41,32 +75,31 @@ INSERT INTO pinwise.pin_type (category, nameof) VALUES
 ('Firma', 'Zabka');
 
 
---3
-INSERT INTO pinwise.pin(user_id, coordinateX, coordinateY) 
-VALUES 
-((SELECT id FROM pinwise.user WHERE username='Jan1'), 21.37, 1.69),
-((SELECT id FROM pinwise.user WHERE username='Anna'), -22.36, 2.71),
-((SELECT id FROM pinwise.user WHERE username='Piotr'), 23.36, 3.72),
-((SELECT id FROM pinwise.user WHERE username='Katarzyna'), -24.36, 4.73),
-((SELECT id FROM pinwise.user WHERE username='Andrzej'), 25.36, 5.74),
-((SELECT id FROM pinwise.user WHERE username='Agnieszka'), -26.36, -6.75),
-((SELECT id FROM pinwise.user WHERE username='Tomasz'), 27.36, 7.76),
-((SELECT id FROM pinwise.user WHERE username='Ewa'), 28.36, 8.77),
-((SELECT id FROM pinwise.user WHERE username='Marek'), -29.36, 9.78),
-((SELECT id FROM pinwise.user WHERE username='Magdalena'), 30.36, -10.79),
-((SELECT id FROM pinwise.user WHERE username='Michal33'), 31.36, 11.80),
-((SELECT id FROM pinwise.user WHERE username='Dorota'), -32.36, 12.81),
-((SELECT id FROM pinwise.user WHERE username='Pawel'), 33.36, -13.82),
-((SELECT id FROM pinwise.user WHERE username='Joanna'), 34.36, 14.83),
-((SELECT id FROM pinwise.user WHERE username='Krzysztof'), -35.36, -15.84),
-((SELECT id FROM pinwise.user WHERE username='Barbara'), 36.36, 16.85),
-((SELECT id FROM pinwise.user WHERE username='Marcin'), 37.36, 17.86),
-((SELECT id FROM pinwise.user WHERE username='Monika'), 38.36, -18.87),
-((SELECT id FROM pinwise.user WHERE username='Grzegorz'), -39.36, 19.88),
-((SELECT id FROM pinwise.user WHERE username='Malgorzata'), 40.36, 20.89);
-
-
 --4
+INSERT INTO pinwise.pin(user_id, coordinateX, coordinateY, adres, id_serwis, modification_date) 
+VALUES 
+((SELECT id FROM pinwise.user WHERE username='Jan1'), 21.37, 1.69, 'address1', 1, '2022-01-01'),
+((SELECT id FROM pinwise.user WHERE username='Anna'), -22.36, 2.71, 'address2', 2, '2022-01-02'),
+((SELECT id FROM pinwise.user WHERE username='Piotr'), 23.36, 3.72, 'address3', 3, '2022-01-03'),
+((SELECT id FROM pinwise.user WHERE username='Katarzyna'), -24.36, 4.73, 'address4', 4, '2022-01-04'),
+((SELECT id FROM pinwise.user WHERE username='Andrzej'), 25.36, 5.74, 'address5', 5, '2022-01-05'),
+((SELECT id FROM pinwise.user WHERE username='Agnieszka'), -26.36, -6.75, 'address6', 6, '2022-01-06'),
+((SELECT id FROM pinwise.user WHERE username='Tomasz'), 27.36, 7.76, 'address7', 7, '2022-01-07'),
+((SELECT id FROM pinwise.user WHERE username='Ewa'), 28.36, 8.77, 'address8', 8, '2022-01-08'),
+((SELECT id FROM pinwise.user WHERE username='Marek'), -29.36, 9.78, 'address9', 9, '2022-01-09'),
+((SELECT id FROM pinwise.user WHERE username='Magdalena'), 30.36, -10.79, 'address10', 10, '2022-01-10'),
+((SELECT id FROM pinwise.user WHERE username='Michal33'), 31.36, 11.80, 'address11', 11, '2022-01-11'),
+((SELECT id FROM pinwise.user WHERE username='Dorota'), -32.36, 12.81, 'address12', 12, '2022-01-12'),
+((SELECT id FROM pinwise.user WHERE username='Pawel'), 33.36, -13.82, 'address13', 13, '2022-01-13'),
+((SELECT id FROM pinwise.user WHERE username='Joanna'), 34.36, 14.83, 'address14', 14, '2022-01-14'),
+((SELECT id FROM pinwise.user WHERE username='Krzysztof'), -35.36, -15.84, 'address15', 15, '2022-01-15'),
+((SELECT id FROM pinwise.user WHERE username='Barbara'), 36.36, 16.85, 'address16', 16, '2022-01-16'),
+((SELECT id FROM pinwise.user WHERE username='Marcin'), 37.36, 17.86, 'address17', 17, '2022-01-17'),
+((SELECT id FROM pinwise.user WHERE username='Monika'), 38.36, -18.87, 'address18', 18, '2022-01-18'),
+((SELECT id FROM pinwise.user WHERE username='Grzegorz'), -39.36, 19.88, 'address19', 19, '2022-01-19'),
+((SELECT id FROM pinwise.user WHERE username='Malgorzata'), 40.36, 20.89, 'address20', 20, '2022-01-20');
+
+--5
 INSERT INTO pinwise.categories (id_pin_type, id_pin)
 VALUES
 ((select p.id from pinwise.pin_type p where p.nameof='Tesco'), (select p.id from pinwise.pin p where p.coordinateX=21.37 and p.coordinateY=1.69)),
