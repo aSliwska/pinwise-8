@@ -48,8 +48,8 @@ public class User implements UserDetails {
     @Column(name = "isadmin")
     private Boolean isAdmin;
 
-    @OneToMany(mappedBy = "user")
-    private List<Pin> pin;
+//    @OneToMany(mappedBy = "user")
+//    private List<Pin> pin;
 
 
     public User(String email, String login, String password) {

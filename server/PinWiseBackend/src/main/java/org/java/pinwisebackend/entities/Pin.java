@@ -25,8 +25,8 @@ public class Pin {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToMany(mappedBy = "pins")
-    private List<PinType> pinTypes;
+//    @ManyToMany(mappedBy = "pins")
+//    private List<PinType> pinTypes;
 
     @Column(name = "coordinatex")
     private Double coordinateX;
