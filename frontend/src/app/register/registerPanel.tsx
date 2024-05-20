@@ -26,18 +26,21 @@ const handleSubmit = async (values: any) => {
 interface RegisterPanelProps {
   name: string;
   email: string;
+  password: string;
   setMode: (mode: string) => void;
   setName: (name: string) => void;
   setEmail: (email: string) => void;
+  setPassword: (password: string) => void;
 }
 
 const RegisterPanel = ({
   name,
   email,
-
+  password,
   setMode,
   setName,
   setEmail,
+  setPassword,
 }: RegisterPanelProps) => {
   const [form] = Form.useForm();
 
@@ -59,19 +62,20 @@ const RegisterPanel = ({
           <Form.Item
             label={<label style={{ color: "white" }}>Email</label>}
             name="email"
-            rules={[{ required: true, message: "Please input your email!" }]}
+            rules={[{ required: true, message: "Podaj e-mail" }]}
             labelCol={{ span: 24 }}
           >
             <Input
               autoFocus={true}
               onChange={(e) => setEmail(e.target.value)}
               defaultValue={email}
+              required
             />
           </Form.Item>
           <Form.Item
             label={<label style={{ color: "white" }}>Nazwa użytkownika</label>}
             name="name"
-            rules={[{ required: true, message: "Please input your username!" }]}
+            rules={[{ required: true, message: "Podaj nazwę użytkownika" }]}
             labelCol={{ span: 24 }}
           >
             <Input
@@ -82,24 +86,24 @@ const RegisterPanel = ({
           <Form.Item
             label={<label style={{ color: "white" }}>Hasło</label>}
             name="password"
-            rules={[{ required: true, message: "Please input your password!" }]}
+            rules={[{ required: true, message: "Podaj hasło" }]}
             labelCol={{ span: 24 }}
           >
-            <Input.Password />
+            <Input.Password onChange={(e) => setPassword(e.target.value)} />
           </Form.Item>
           <Form.Item
             label={<label style={{ color: "white" }}>Powtórz hasło</label>}
             name="passwordConfirmation"
             dependencies={["password"]}
             rules={[
-              { required: true, message: "Please confirm your password!" },
+              { required: true, message: "Potwierdź hasło" },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("password") === value) {
                     return Promise.resolve();
                   }
                   return Promise.reject(
-                    new Error("The two passwords do not match!")
+                    new Error("Hasła są różne. Spróbuj ponownie.")
                   );
                 },
               }),
@@ -108,19 +112,22 @@ const RegisterPanel = ({
           >
             <Input.Password />
           </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              style={{ fontWeight: 700, height: "60px" }}
+              onClick={(e) => {
+                e.preventDefault();
+                console.log("User data: ", name, email, password);
+                setMode("personalData");
+              }}
+            >
+              Dalej
+            </Button>
+          </Form.Item>
         </div>
-
-        <Button
-          type="primary"
-          htmlType="submit"
-          block
-          style={{ fontWeight: 700, height: "60px" }}
-          onClick={() => {
-            setMode("personalData");
-          }}
-        >
-          Dalej
-        </Button>
       </div>
     </Form>
   );

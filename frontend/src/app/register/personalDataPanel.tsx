@@ -1,15 +1,20 @@
 import { Button, Select } from "antd";
-import { useState } from "react";
 
 interface PersonalDataPanelProps {
+  setAge: (age: string) => void;
   setMode: (mode: string) => void;
+  setGender: (gender: string) => void;
+  handleSubmit: () => void;
+  setEducation: (education: string) => void;
 }
 
-const PersonalDataPanel = ({ setMode }: PersonalDataPanelProps) => {
-  const [gender, setGender] = useState<string>("Wybierz");
-  const [age, setAge] = useState<string>("18-");
-  const [education, setEducation] = useState<string>("Podstawowe");
-
+const PersonalDataPanel = ({
+  setAge,
+  setMode,
+  setGender,
+  handleSubmit,
+  setEducation,
+}: PersonalDataPanelProps) => {
   const handleGoBack = () => {
     setMode("register");
   };
@@ -49,15 +54,12 @@ const PersonalDataPanel = ({ setMode }: PersonalDataPanelProps) => {
                     onChange={(value) => setAge(value)}
                     defaultValue={"Wybierz"}
                   >
-                    <Select.Option value={"18-"}>18-</Select.Option>
-                    <Select.Option value={"18-24"}>19-24</Select.Option>
-                    <Select.Option value={"25-34"}>25-34</Select.Option>
-                    <Select.Option value={"35-44"}>35-44</Select.Option>
-                    <Select.Option value={"45-54"}>45-54</Select.Option>
-                    <Select.Option value={"55-64"}>55-64</Select.Option>
-                    <Select.Option value={"65-74"}>65-74</Select.Option>
-                    <Select.Option value={"75-84"}>75-84</Select.Option>
-                    <Select.Option value={"85+"}>85+</Select.Option>
+                    <Select.Option value={"18-"}>&lt; 18</Select.Option>
+                    <Select.Option value="18-30">18-25</Select.Option>
+                    <Select.Option value="30-40">26-31</Select.Option>
+                    <Select.Option value="40-50">32-47</Select.Option>
+                    <Select.Option value="50-60">48-61</Select.Option>
+                    <Select.Option value="60+">&gt; 62</Select.Option>
                   </Select>
                 </td>
               </tr>
@@ -85,7 +87,7 @@ const PersonalDataPanel = ({ setMode }: PersonalDataPanelProps) => {
             block
             style={{ fontWeight: 700 }}
             onClick={() => {
-              setMode("emailSent");
+              handleSubmit();
             }}
           >
             Załóż konto
