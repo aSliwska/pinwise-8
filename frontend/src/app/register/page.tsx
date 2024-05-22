@@ -8,14 +8,44 @@ import { SuccessPanel } from "@/app/register/successPanel";
 export default function RegisterPage() {
   const [mode, setMode] = useState<string>("register");
   const [email, setEmail] = useState<string>("");
-  const [name, setName] = useState<string>("");
+  const [username, setName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [gender, setGender] = useState<string>("Wybierz");
   const [age, setAge] = useState<string>("Wybierz");
   const [education, setEducation] = useState<string>("Wybierz");
 
-  const handleSubmit = () => {
-    console.log("User data: ", name, email, password, gender, age, education);
+  const handleSubmit = async () => {
+    console.log(
+      "User data: ",
+      username,
+      email,
+      password,
+      gender,
+      age,
+      education
+    );
+
+    try {
+      const response = await fetch("http://localhost:3000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: username,
+          email,
+          password,
+        }),
+      });
+      if (response.ok) {
+        const { token } = await response.json();
+        // localStorage.setItem("token", token);
+        console.log("token: ", token);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
     setMode("success");
   };
   return (
@@ -23,7 +53,7 @@ export default function RegisterPage() {
       <div className="flex min-h-full items-center justify-center color-bg-gradient-dark-gray w-3/5">
         {mode === "register" && (
           <RegisterPanel
-            name={name}
+            name={username}
             email={email}
             password={password}
             setMode={setMode}

@@ -1,15 +1,15 @@
 "use client";
 import Link from "next/link";
-import { Input, Button, ConfigProviderProps } from 'antd';
+import { Input, Button, ConfigProviderProps } from "antd";
 
 async function handleSubmit(event: React.FormEvent) {
   event.preventDefault();
   const email = (event.target as HTMLFormElement).email.value;
   const password = (event.target as HTMLFormElement).password.value;
 
-  alert("login: " + email + " " + password);
+  alert("email: " + email + " " + password);
 
-  /*try {
+  try {
     const response = await fetch("http://localhost:3000/api/login", {
       method: "POST",
       headers: {
@@ -20,13 +20,10 @@ async function handleSubmit(event: React.FormEvent) {
     if (response.ok) {
       const { token } = await response.json();
       localStorage.setItem("token", token);
-      window.location.href = {`/profile/${user.id}`};
-    } else {
-      throw new Error("Invalid login");
     }
   } catch (error) {
     console.error(error);
-  }*/
+  }
 }
 
 export default function LoginPage() {
@@ -40,15 +37,21 @@ export default function LoginPage() {
             <div className="w-full">
               <div className="w-full mb-6">
                 <div className="flex justify-between w-full mb-4">
-                  <label htmlFor="email" className="text-neutral-300 font-light">
+                  <label
+                    htmlFor="email"
+                    className="text-neutral-300 font-light"
+                  >
                     Email
                   </label>
                 </div>
-                <Input id="email" type="email" autoFocus={true}/>
+                <Input id="email" type="email" autoFocus={true} />
               </div>
               <div className="self-stretch">
                 <div className="flex justify-between w-full mb-4">
-                  <label htmlFor="password" className="text-neutral-300 font-light">
+                  <label
+                    htmlFor="password"
+                    className="text-neutral-300 font-light"
+                  >
                     Hasło
                   </label>
                   <Link
@@ -58,11 +61,17 @@ export default function LoginPage() {
                     Zapomniałem/am hasła
                   </Link>
                 </div>
-                <Input id="password" type="password"/>
+                <Input id="password" type="password" />
               </div>
             </div>
 
-            <Button type="primary" size="large" htmlType="submit" block style={{fontWeight: 700}}>
+            <Button
+              type="primary"
+              size="large"
+              htmlType="submit"
+              block
+              style={{ fontWeight: 700 }}
+            >
               Zaloguj
             </Button>
           </div>
