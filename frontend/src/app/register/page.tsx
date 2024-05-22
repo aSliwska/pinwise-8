@@ -7,12 +7,13 @@ import { SuccessPanel } from "@/app/register/successPanel";
 
 export default function RegisterPage() {
   const [mode, setMode] = useState<string>("register");
-  const [email, setEmail] = useState<string>("");
-  const [username, setName] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState<string>("vv@vv.com");
+  const [username, setName] = useState<string>("vv");
+  const [password, setPassword] = useState<string>("vv");
   const [gender, setGender] = useState<string>("Wybierz");
   const [age, setAge] = useState<string>("Wybierz");
   const [education, setEducation] = useState<string>("Wybierz");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async () => {
     console.log(
@@ -26,27 +27,33 @@ export default function RegisterPage() {
     );
 
     try {
-      const response = await fetch("http://localhost:3000/api/register", {
+      const response = await fetch("http://localhost:8080/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: username,
+          username,
           email,
           password,
         }),
       });
+
       if (response.ok) {
         const { token } = await response.json();
-        // localStorage.setItem("token", token);
         console.log("token: ", token);
+        setMode("success");
+      } else {
+        const errorMsg = await response.text();
+        console.error("Error:", response.status, errorMsg);
+        setErrorMessage(errorMsg);
+        setMode("register");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Fetch error:", error);
+      setErrorMessage("Failed to register. Please try again.");
+      setMode("register");
     }
-
-    setMode("success");
   };
   return (
     <main className="flex min-h-full min-w-full flex-col items-center justify-between color-bg-gradient-light-gray">
@@ -56,10 +63,12 @@ export default function RegisterPage() {
             name={username}
             email={email}
             password={password}
+            errorMessage={errorMessage}
             setMode={setMode}
             setName={setName}
             setEmail={setEmail}
             setPassword={setPassword}
+            setErrorMessage={setErrorMessage}
           />
         )}
         {mode === "personalData" && (

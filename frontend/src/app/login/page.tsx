@@ -1,32 +1,36 @@
 "use client";
 import Link from "next/link";
 import { Input, Button, ConfigProviderProps } from "antd";
-
-async function handleSubmit(event: React.FormEvent) {
-  event.preventDefault();
-  const email = (event.target as HTMLFormElement).email.value;
-  const password = (event.target as HTMLFormElement).password.value;
-
-  alert("email: " + email + " " + password);
-
-  try {
-    const response = await fetch("http://localhost:3000/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    if (response.ok) {
-      const { token } = await response.json();
-      localStorage.setItem("token", token);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    const email = (event.target as HTMLFormElement).email.value;
+    const password = (event.target as HTMLFormElement).password.value;
+
+    alert("email: " + email + " " + password);
+
+    try {
+      const response = await fetch("http://localhost:8080/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      if (response.ok) {
+        const { token } = await response.json();
+        localStorage.setItem("token", token);
+        router.push("/map");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <main className="flex min-h-full min-w-full flex-col items-center justify-between color-bg-gradient-light-gray">
       <div className="flex min-h-full items-center justify-center color-bg-gradient-dark-gray w-3/5 min-w-[500px]">
@@ -74,6 +78,9 @@ export default function LoginPage() {
             >
               Zaloguj
             </Button>
+            <Link href="/register" className="text-neutral-300">
+              Nie masz konta? Zarejestruj się
+            </Link>
           </div>
         </form>
       </div>

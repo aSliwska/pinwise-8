@@ -1,22 +1,31 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function RequireLogin({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+function useRequireLogin() {
   const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
-  useLayoutEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login");
-    } else {
-      setAuthorized(true);
-    }
+
+  useEffect(() => {
+    // fetch("http://localhost:8080/api/verify", {
+    //   headers: {
+    //     Authorization: `Bearer ${localStorage.getItem("token")}`,
+    //   },
+    // }).then((response) => {
+    //   if (response.ok) {
+    //     console.log("Authorized - verified");
+    //     setAuthorized(true);
+    //   } else {
+    //     console.log("Unauthorized - verify failed");
+    //     setAuthorized(false);
+    //     // router.push("/login");
+    //   }
+    // });
+    setAuthorized(localStorage.getItem("token") !== null);
   }, [router]);
-  return authorized ? children : null;
+
+  return { authorized, setAuthorized };
 }
+
+export default useRequireLogin;

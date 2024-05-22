@@ -1,4 +1,5 @@
 import { Button, Select } from "antd";
+import Link from "next/link";
 
 interface PersonalDataPanelProps {
   setAge: (age: string) => void;
