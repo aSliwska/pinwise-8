@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import { CloseOutlined } from '@ant-design/icons';
-import { useAtomValue } from 'jotai';
-import { isMapSidemenuOpenAtom, userAtom } from '@/components/store';
+import { useAtom, useAtomValue } from 'jotai';
+import { isMapSidemenuOpenAtom, showAllUserPinsOnMapAtom, userAtom } from '@/components/store';
 
 export async function handleSearch(event: React.FormEvent) {
   event.preventDefault();
@@ -33,7 +33,7 @@ export default function SideMenu() {
   const pathname = usePathname();
   const isMapSidemenuOpen = useAtomValue(isMapSidemenuOpenAtom);
 
-  return ( // todo: logged out user appearance
+  return (
     <div className={(isMapSidemenuOpen? "" : "-translate-x-full") + " transition-transform duration-200 w-[400px] h-full pt-12 -translate-y-[48px] absolute z-[1] color-bg-gradient-dark-gray divide-y divide-neutral-600 overflow-hidden"}>
       {pathname == "/map" ? (<SearchMenu/>) : (<HeatmapMenu/>)}
     </div>
@@ -243,13 +243,17 @@ function SearchMenu() {
     },
   ]); // TODO: fetch companies and services
   const user = useAtomValue(userAtom);
+  const [showAllUserPinsOnMap, setShowAllUserPinsOnMap] = useAtom(showAllUserPinsOnMapAtom);
 
   return (
     <>
       <div className="flex flex-row p-6 gap-3 items-center">
         {user.isAuthenticated ? (
           <>
-            <Switch defaultChecked onChange={showUserPins}/>
+            <Switch checked={showAllUserPinsOnMap} onChange={() => {
+              // await showAllUserPins();
+              setShowAllUserPinsOnMap(!showAllUserPinsOnMap);
+            }}/>
             <div className='text-neutral-200'>Pokaż moje pineski</div>
           </>
         ) : (

@@ -6,9 +6,10 @@ export const userAtom = atom({
   isAuthenticated: true,
   id: 0,
   name: "TestUser",
-})
+});
 
-export const isMapSidemenuOpenAtom = atom(false)
+export const isMapSidemenuOpenAtom = atom(false);
+export const showAllUserPinsOnMapAtom = atom(false);
 
 export default function StoreProvider({
   children
