@@ -1,15 +1,19 @@
 "use client";
 
-import { Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import { Icon } from 'leaflet';
-import PinPopupContent from '@/components/map/pin';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import PinPopupContent from "@/components/map/pin";
+import { Icon } from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { Marker, Popup } from "react-leaflet";
 
 export default function MapPage() {
-  const markerIcon = new Icon({iconUrl: 'marker.svg', iconSize: [24, 40]});
-  const markerSelectedIcon = new Icon({iconUrl: 'marker-selected.svg', iconSize: [24, 40]});
-  const [pins, setPins] = useState([{
+  const markerIcon = new Icon({ iconUrl: "marker.svg", iconSize: [24, 40] });
+  const markerSelectedIcon = new Icon({
+    iconUrl: "marker-selected.svg",
+    iconSize: [24, 40],
+  });
+  const [pins, setPins] = useState([
+    {
       id: 0,
       x: 50.06194,
       y: 19.93686,
@@ -32,60 +36,74 @@ export default function MapPage() {
       logo: "/temp_rectangle.svg",
       draggable: false,
       markerRef: useRef<L.Marker>(null),
-    }
+    },
   ]);
-  const toggleDraggable = useCallback((id: number) => {
-    setPins(pins.map((pin) => {
-      if (pin.id === id) {
-        return {
-          ...pin,
-          draggable: !pin.draggable,
-        };
-      }
-      return pin;
-    }));
-  }, [pins, setPins]);
-  const setCoordinates = useCallback((id: number, x: number, y: number, draggable: boolean) => {
-    setPins(pins.map((pin) => {
-      if (pin.id === id) {
-        return {
-          ...pin,
-          x: x,
-          y: y,
-          draggable: draggable,
-        };
-      }
-      return pin;
-    }));
-  }, [pins, setPins]);
+  const toggleDraggable = useCallback(
+    (id: number) => {
+      setPins(
+        pins.map((pin) => {
+          if (pin.id === id) {
+            return {
+              ...pin,
+              draggable: !pin.draggable,
+            };
+          }
+          return pin;
+        })
+      );
+    },
+    [pins, setPins]
+  );
+
+  const setCoordinates = useCallback(
+    (id: number, x: number, y: number, draggable: boolean) => {
+      setPins(
+        pins.map((pin) => {
+          if (pin.id === id) {
+            return {
+              ...pin,
+              x: x,
+              y: y,
+              draggable: draggable,
+            };
+          }
+          return pin;
+        })
+      );
+    },
+    [pins, setPins]
+  );
+
+  const eventHandlersArray = useMemo(() => {
+    return pins.map((pin) => {
+      return {
+        dragend() {
+          const marker = pin.markerRef.current;
+          if (marker) {
+            const coords = marker.getLatLng();
+            setCoordinates(pin.id, coords.lat, coords.lng, true);
+          }
+        },
+      };
+    });
+  }, [pins, setCoordinates]);
 
   return (
     <>
-      {pins.map((pin) => (
-        <Marker 
-          position={[pin.x, pin.y]} 
-          icon={pin.draggable ? markerSelectedIcon : markerIcon} 
-          draggable={pin.draggable} 
-          ref={pin.markerRef} 
-          eventHandlers={useMemo(
-            () => ({
-              dragend() {
-                let marker = pin.markerRef.current;
-                if (marker != null) {
-                  let coords = marker.getLatLng();
-        
-                  setCoordinates(pin.id, coords.lat, coords.lng, true);
-                }
-              },
-            }), // todo: im going to cry
-            [pin, setCoordinates],
-          )}
+      {pins.map((pin, index) => (
+        <Marker
+          key={pin.id}
+          position={[pin.x, pin.y]}
+          icon={pin.draggable ? markerSelectedIcon : markerIcon}
+          draggable={pin.draggable}
+          ref={pin.markerRef}
+          eventHandlers={eventHandlersArray[index]}
           zIndexOffset={pin.draggable ? 9001 : 0}
         >
           <Popup closeButton={false} offset={[0, -4]}>
-            <PinPopupContent 
-              pin={pin} 
-              toggleDraggable={toggleDraggable} 
+            <PinPopupContent
+              pin={pin}
+              toggleDraggable={toggleDraggable}
               setCoordinates={setCoordinates}
             />
           </Popup>
@@ -103,6 +121,5 @@ export default function MapPage() {
         </Popup>
       </Marker>
     </>
-    
   );
 }
