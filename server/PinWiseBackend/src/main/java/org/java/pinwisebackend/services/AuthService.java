@@ -23,10 +23,10 @@ public class AuthService implements UserDetailsService {
 
     public UserDetails signUp(SignUpDto data) throws InvalidClaimException {
         if (repository.findByEmail(data.email()) != null)
-            throw new InvalidClaimException("E-mail already in use");
+            throw new InvalidClaimException("E-mail jest już zajęty");
 
         if(repository.findByUsername(data.username()) != null)
-            throw new InvalidClaimException("Username already in use");
+            throw new InvalidClaimException("Nazwa jest już zajęta");
 
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());

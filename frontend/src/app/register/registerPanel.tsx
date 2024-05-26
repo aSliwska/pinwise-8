@@ -1,50 +1,27 @@
+// pages/index.tsx
+
 import { Button, Form, Input } from "antd";
-import Link from "next/link";
 import { useState } from "react";
 
-const handleSubmit = async (values: any) => {
-  const { email, password } = values;
-  try {
-    const response = await fetch("http://localhost:8080/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    if (response.ok) {
-      const { token } = await response.json();
-      localStorage.setItem("token", token);
-      console.log("Registered and logged");
-      // window.location.href = {`/profile/${user.id}`};
-    } else {
-      throw new Error("Invalid login");
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 interface RegisterPanelProps {
-  name: string;
+  username: string;
   email: string;
   password: string;
   errorMessage: string | null;
   setMode: (mode: string) => void;
-  setName: (name: string) => void;
+  setUsername: (name: string) => void;
   setEmail: (email: string) => void;
   setPassword: (password: string) => void;
   setErrorMessage: (errorMessage: string | null) => void;
 }
 
 const RegisterPanel = ({
-  name,
+  username,
   email,
   password,
   errorMessage,
-
   setMode,
-  setName,
+  setUsername,
   setEmail,
   setPassword,
   setErrorMessage,
@@ -52,121 +29,120 @@ const RegisterPanel = ({
   const [form] = Form.useForm();
   const [validForm, setValidForm] = useState(false);
 
-  const onFinish = async (values: any) => {
-    await handleSubmit(values);
-  };
+  const checkIsValidForm = () => {
+    const values = form.getFieldsValue();
+    const isValidEmail =
+      values.email && /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(values.email);
+    const isValidName = values.username && values.username.length >= 3;
+    const isValidPassword = values.password && values.password.length >= 8;
+    const isValidPasswordConfirmation =
+      values.password === values.passwordConfirmation;
 
-  // Function to handle form validation
-  const handleValidation = (_, value: string) => {
-    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-    if (!isValidEmail) {
-      setValidForm(false);
-    }
+    setValidForm(
+      isValidEmail &&
+        isValidName &&
+        isValidPassword &&
+        isValidPasswordConfirmation
+    );
   };
 
   return (
-    <Form
-      form={form}
-      name="register"
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      onChange={() => setValidForm(true)}
-    >
-      <div className="flex flex-col items-center justify-between gap-12 p-4 rounded-lg text-white">
-        <div className="text-5xl font-bold">Zarejestruj się</div>
+    <>
+      {errorMessage && <div className="text-red-500 mb-2">{errorMessage}</div>}
+      <Form
+        form={form}
+        name="register"
+        initialValues={{ remember: true }}
+        onFieldsChange={checkIsValidForm} // Trigger validation check on any field change
+      >
+        <div className="flex flex-col items-center justify-between gap-12 p-4 rounded-lg text-white">
+          <div className="text-5xl font-bold">Zarejestruj się</div>
 
-        <div className="w-full">
-          <Form.Item
-            label={<label style={{ color: "white" }}>Email</label>}
-            name="email"
-            rules={[
-              { required: true, message: "Podaj e-mail" },
-              { type: "email", message: "Podaj poprawny e-mail" },
-              { validator: handleValidation }, // Validate email and set `t` accordingly
-            ]}
-            validateStatus={!validForm ? "error" : ""}
-            help={!validForm ? "Podaj poprawny e-mail" : ""}
-            labelCol={{ span: 24 }}
-          >
-            <Input
-              onChange={(e) => setEmail(e.target.value)}
-              defaultValue={email}
-            />
-          </Form.Item>
-          <Form.Item
-            label={<label style={{ color: "white" }}>Nazwa użytkownika</label>}
-            name="name"
-            rules={[{ required: true, message: "Podaj nazwę użytkownika" }]}
-            labelCol={{ span: 24 }}
-          >
-            <Input
-              onChange={(e) => setName(e.target.value)}
-              defaultValue={name}
-            />
-          </Form.Item>
-          <Form.Item
-            label={<label style={{ color: "white" }}>Hasło</label>}
-            name="password"
-            rules={[{ required: true, message: "Podaj hasło" }]}
-            labelCol={{ span: 24 }}
-          >
-            <Input.Password onChange={(e) => setPassword(e.target.value)} />
-          </Form.Item>
-          <Form.Item
-            label={<label style={{ color: "white" }}>Powtórz hasło</label>}
-            name="passwordConfirmation"
-            dependencies={["password"]}
-            rules={[
-              { required: true, message: "Potwierdź hasło" },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue("password") === value) {
-                    return Promise.resolve();
-                  } else {
-                    setValidForm(false);
-                    return Promise.reject(
-                      new Error("Hasła są różne. Spróbuj ponownie.")
-                    );
-                  }
+          <div className="w-full">
+            <Form.Item
+              label={<label style={{ color: "white" }}>Email</label>}
+              name="email"
+              rules={[
+                { required: true, message: "Podaj e-mail" },
+                { type: "email", message: "Podaj poprawny e-mail" },
+              ]}
+              labelCol={{ span: 24 }}
+            >
+              <Input
+                onChange={(e) => setEmail(e.target.value)}
+                defaultValue={email}
+              />
+            </Form.Item>
+            <Form.Item
+              label={
+                <label style={{ color: "white" }}>Nazwa użytkownika</label>
+              }
+              name="username"
+              rules={[
+                { required: true, message: "Podaj nazwę użytkownika" },
+                {
+                  min: 3,
+                  message: "Nazwa użytkownika musi mieć co najmniej 3 znaki",
                 },
-              }),
-            ]}
-            labelCol={{ span: 24 }}
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item>
-            {validForm ? (
+              ]}
+              labelCol={{ span: 24 }}
+            >
+              <Input
+                onChange={(e) => setUsername(e.target.value)}
+                defaultValue={username}
+              />
+            </Form.Item>
+            <Form.Item
+              label={<label style={{ color: "white" }}>Hasło</label>}
+              name="password"
+              rules={[
+                { required: true, message: "Podaj hasło" },
+                { min: 8, message: "Hasło musi mieć co najmniej 8 znaków" },
+              ]}
+              labelCol={{ span: 24 }}
+            >
+              <Input.Password onChange={(e) => setPassword(e.target.value)} />
+            </Form.Item>
+            <Form.Item
+              label={<label style={{ color: "white" }}>Powtórz hasło</label>}
+              name="passwordConfirmation"
+              dependencies={["password"]}
+              rules={[
+                { required: true, message: "Potwierdź hasło" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject("Hasła są różne. Spróbuj ponownie.");
+                  },
+                }),
+              ]}
+              labelCol={{ span: 24 }}
+            >
+              <Input.Password />
+            </Form.Item>
+            <Form.Item>
               <Button
                 type="primary"
                 htmlType="submit"
                 block
                 style={{ fontWeight: 700, height: "60px" }}
+                disabled={!validForm} // Disable the button if the form is not valid
                 onClick={(e) => {
-                  e.preventDefault();
-                  console.log("User data: ", name, email, password);
-                  setMode("personalData");
+                  if (validForm) {
+                    e.preventDefault();
+                    setMode("personalData");
+                  }
                 }}
               >
                 Dalej
               </Button>
-            ) : (
-              <Button type="primary" block disabled>
-                {" "}
-                Dalej{" "}
-              </Button>
-            )}
-          </Form.Item>
-
-          {errorMessage && (
-            <div className="text-red-500 mb-2">{errorMessage}</div>
-          )}
-          <Link href="/login" className="text-neutral-300">
-            Masz już konto? Zaloguj się
-          </Link>
+            </Form.Item>
+          </div>
         </div>
-      </div>
-    </Form>
+      </Form>
+    </>
   );
 };
 

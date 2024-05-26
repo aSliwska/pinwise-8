@@ -1,21 +1,18 @@
 "use client";
 
+import { isMapSidemenuOpenAtom, userAtom } from "@/components/store";
+import { ArrowLeftOutlined, MenuOutlined } from "@ant-design/icons";
+import { Button } from "antd";
+import { useAtom } from "jotai";
+import { Amita } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
-import { Amita } from "next/font/google";
 import { usePathname } from "next/navigation";
-import { useAtomValue, useAtom } from "jotai";
-import { isMapSidemenuOpenAtom, userAtom } from "@/components/store";
-import { MenuOutlined, ArrowLeftOutlined } from "@ant-design/icons";
-import { Button } from "antd";
-import RequireLogin from "@/components/RequireLogin";
-import useRequireLogin from "@/components/RequireLogin";
-import { useRouter } from "next/navigation";
 
 const amita = Amita({ weight: "400", subsets: ["latin"] });
 
 export default function TopBar() {
-  const user = useAtomValue(userAtom);
+  const [user, setUser] = useAtom(userAtom);
   const [isMapSidemenuOpen, setIsMapSidemenuOpen] = useAtom(
     isMapSidemenuOpenAtom
   );
@@ -23,8 +20,6 @@ export default function TopBar() {
     setIsMapSidemenuOpen(!isMapSidemenuOpen);
   };
   const pathname = usePathname();
-  const { authorized, setAuthorized } = useRequireLogin();
-  const router = useRouter();
 
   return (
     <div className="flex w-screen h-12 px-5 justify-between items-center bg-[#2E2E2E] border-[#282828] border-b">
@@ -62,35 +57,23 @@ export default function TopBar() {
       </Link>
 
       <div className="flex flex-row flex-grow basis-0">
-        {user.isAuthenticated ? (
+        {user.isAuthenticated === true ? (
           <div className="flex flex-row justify-end items-center w-full gap-2">
             <span className="text-neutral-400 text-sm">
               Witaj, {user.name}!
             </span>
             <Button ghost href={`/profile/${user.id}`}>
               Mój profil
-            </Button>{" "}
-            {authorized ? (
-              <Button
-                type="primary"
-                style={{ fontWeight: 600 }}
-                onClick={() => {
-                  localStorage.removeItem("token");
-                  // router.push("/login");
-                  setAuthorized(false);
-                }}
-              >
-                Wyloguj
-              </Button>
-            ) : (
-              <Button
-                type="primary"
-                style={{ fontWeight: 600 }}
-                onClick={() => router.push("/login")}
-              >
-                Zaloguj
-              </Button>
-            )}
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                setUser((user) => ({ ...user, isAuthenticated: false }));
+                localStorage.removeItem("token");
+              }}
+            >
+              &#8617;
+            </Button>
           </div>
         ) : (
           <div className="flex flex-row flex-grow basis-0 justify-end items-center gap-2">

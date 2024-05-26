@@ -3,7 +3,7 @@
 import { Provider, atom } from "jotai";
 
 export const userAtom = atom({
-  isAuthenticated: true,
+  isAuthenticated: localStorage.getItem("token") ? true : false,
   id: 0,
   name: "TestUser",
 });
