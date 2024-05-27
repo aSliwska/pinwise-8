@@ -1,8 +1,17 @@
 import { DragOutlined, DeleteOutlined } from '@ant-design/icons';
 import Image from "next/image";
-import { Ref, useState } from 'react';
+import { Ref, RefObject, useState } from 'react';
 import { Button } from 'antd';
 
+export async function postPinCoordinates(id: number, x: number, y: number) {
+  alert(`Post new coordinates for pin with id ${id}, x: ${x}, y: ${y}`);
+  //todo: implement post request
+}
+
+export async function postDeletePin(id: number) {
+  alert(`Delete pin with id ${id}`);
+  //todo: implement delete request
+}
 
 export default function PinPopupContent(props: {
   pin: {
@@ -15,12 +24,15 @@ export default function PinPopupContent(props: {
     lastModificationDate: string;
     logo: string;
     draggable: boolean;
-    markerRef: Ref<L.Marker>;
+    selected: boolean;
+    inDeleteMode: boolean;
+    markerRef: RefObject<L.Marker>;
   },
   toggleDraggable: (id: number) => void;
   setCoordinates: (id: number, x: number, y: number, draggable: boolean) => void;
+  setInDeleteMode: (id: number, inDeleteMode: boolean) => void;
+  deletePin: (id: number) => void;
 }) {
-  const [inDeleteMode, setInDeleteMode] = useState(false);
   const [oldCoords, setOldCoords] = useState({
     x: props.pin.x, 
     y: props.pin.y
@@ -48,20 +60,20 @@ export default function PinPopupContent(props: {
           </div>
         </>
       ) : (
-        inDeleteMode ? (
+        props.pin.inDeleteMode ? (
           <>
             <span className="text-neutral-600 text-sm text-center">
               Na pewno <br/> usunąć pineskę?
             </span>
-            <div className="flex flex-row gap-2 justify-between">
+            <div className="flex flex-row gap-2 justify-between items-center">
               <Button danger type="primary" onClick={() => {
-                  //TODO: delete pin from list
-                  //TODO: post delete request
+                  postDeletePin(props.pin.id);
+                  props.deletePin(props.pin.id);
                 }}>
                 Tak
               </Button>
               <Button ghost style={{color: "#555555", borderColor: "#555555"}} onClick={() => {
-                setInDeleteMode(false);
+                props.setInDeleteMode(props.pin.id, false);
               }}>
                 Nie
               </Button>
@@ -91,14 +103,17 @@ export default function PinPopupContent(props: {
               </div>
               <div className='flex flex-row text-lg gap-3 text-neutral-600'>
                 <DragOutlined onClick={() => {
-                  props.toggleDraggable(props.pin.id);
                   setOldCoords({x: props.pin.x, y: props.pin.y});
+                  props.toggleDraggable(props.pin.id);
                 }}/>
-                <DeleteOutlined onClick={() => {
-                  setInDeleteMode(true);
-                  // TODO: dont close popup
-                  // TODO: toggle selected mode
-                }}/>
+                <div onClick={(e) => 
+                  e.stopPropagation() // stops popup from closing after the onClick
+                }> 
+                  <DeleteOutlined onClick={() => {
+                    props.setInDeleteMode(props.pin.id, true);
+                  }}/>
+                </div>
+                
               </div>
             </div>
           </>
@@ -106,9 +121,4 @@ export default function PinPopupContent(props: {
       )}
     </div>  
   );
-}
-
-function postPinCoordinates(id: number, x: number, y: number) {
-  alert(`Post new coordinates for pin with id ${id}, x: ${x}, y: ${y}`);
-  //todo: implement post request
 }
