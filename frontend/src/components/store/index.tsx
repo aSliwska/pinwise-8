@@ -1,24 +1,22 @@
 "use client";
 
-import { Provider, atom } from 'jotai';
+import { Provider, atom } from "jotai";
 
 export const userAtom = atom({
-  isAuthenticated: true,
+  isAuthenticated: localStorage.getItem("token") ? true : false,
   id: 0,
   name: "TestUser",
 });
 
 export const isMapSidemenuOpenAtom = atom(false);
+
 export const showAllUserPinsOnMapAtom = atom(false);
 
+
 export default function StoreProvider({
-  children
+  children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  return (
-    <Provider>
-      {children}
-    </Provider>
-  );
+  return <Provider>{children}</Provider>;
 }

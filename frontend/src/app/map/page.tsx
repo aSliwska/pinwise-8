@@ -4,7 +4,7 @@ import { Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
 import PinPopupContent from '@/components/map/pin';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 
 export async function fetchAllUserPins() {
@@ -40,7 +40,10 @@ const allUserPins = [{
 
 export default function MapOverlay() {
   const markerIcon = new Icon({iconUrl: 'marker.svg', iconSize: [24, 40]});
-  const markerSelectedIcon = new Icon({iconUrl: 'marker-selected.svg', iconSize: [24, 40]});
+  const markerSelectedIcon = new Icon({
+    iconUrl: "marker-selected.svg",
+    iconSize: [24, 40],
+  });
   const [pins, setPins] = useState(allUserPins.map((pin) => {
     return {
       ...pin, 
@@ -115,32 +118,39 @@ export default function MapOverlay() {
   const deletePin = useCallback((id: number) => {
     setPins(pins.filter((pin) => pin.id !== id));
   }, [pins, setPins]);
+  
+  const eventHandlersArray = useMemo(() => {
+    return pins.map((pin) => {
+      return {
+        dragend() {
+          const marker = pin.markerRef.current;
+          if (marker != null) {
+            const coords = marker.getLatLng();
+            setCoordinates(pin.id, coords.lat, coords.lng, true);
+          }
+        },
+        popupopen() {
+          setFocus(pin.id, true);
+        },
+        popupclose() {
+          if (!pin.draggable) {
+            setFocus(pin.id, false);
+          }
+        },
+      };
+    });
+  }, [pins, setCoordinates]);
 
   return (
     <>
-      {pins.map((pin) => (
+      {pins.map((pin, index) => (
         <Marker 
+          key={pin.id}
           position={[pin.x, pin.y]} 
           icon={pin.selected ? markerSelectedIcon : markerIcon} 
           draggable={pin.draggable} 
           ref={pin.markerRef} 
-          eventHandlers={{
-            dragend() {
-              let marker = pin.markerRef.current;
-              if (marker != null) {
-                let coords = marker.getLatLng();
-                setCoordinates(pin.id, coords.lat, coords.lng, true);
-              }
-            },
-            popupopen() {
-              setFocus(pin.id, true);
-            },
-            popupclose() {
-              if (!pin.draggable) {
-                setFocus(pin.id, false);
-              }
-            },
-          }}
+          eventHandlers={eventHandlersArray[index]}
           zIndexOffset={pin.selected ? 9001 : 0}
         >
           <Popup 
@@ -170,6 +180,5 @@ export default function MapOverlay() {
         </Popup>
       </Marker> */}
     </>
-    
   );
 }
