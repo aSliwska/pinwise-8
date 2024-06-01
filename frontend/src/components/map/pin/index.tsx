@@ -3,12 +3,12 @@ import Image from "next/image";
 import { Ref, RefObject, useState } from 'react';
 import { Button } from 'antd';
 
-export async function postPinCoordinates(id: number, x: number, y: number) {
+async function postPinCoordinates(id: number, x: number, y: number) {
   alert(`Post new coordinates for pin with id ${id}, x: ${x}, y: ${y}`);
   //todo: implement post request
 }
 
-export async function postDeletePin(id: number) {
+async function postDeletePin(id: number) {
   alert(`Delete pin with id ${id}`);
   //todo: implement delete request
 }

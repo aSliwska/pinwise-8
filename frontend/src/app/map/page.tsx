@@ -7,10 +7,6 @@ import PinPopupContent from '@/components/map/pin';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 
-export async function fetchAllUserPins() {
-
-}
-
 const allUserPins = [{
   id: 0,
   x: 50.06194,
@@ -26,8 +22,8 @@ const allUserPins = [{
 },
 {
   id: 1,
-  x: 50.0619,
-  y: 19.9431,
+  x: 50.06147,
+  y: 19.93799,
   name: "Firma 1",
   serviceType: "Typ usługi 1",
   address: "ul. Temp 10",
@@ -39,11 +35,19 @@ const allUserPins = [{
 }];
 
 export default function MapOverlay() {
-  const markerIcon = new Icon({iconUrl: 'marker.svg', iconSize: [24, 40]});
-  const markerSelectedIcon = new Icon({
+  const [markerIcon, _] = useState(new Icon({
+    iconUrl: 'marker.svg', 
+    iconSize: [24, 40],
+    iconAnchor: [12, 40],
+    popupAnchor: [-1, -32],
+  }));
+  const [markerSelectedIcon, __] = useState(new Icon({
     iconUrl: "marker-selected.svg",
     iconSize: [24, 40],
-  });
+    iconAnchor: [12, 40],
+    popupAnchor: [-1, -32],
+  }));
+  
   const [pins, setPins] = useState(allUserPins.map((pin) => {
     return {
       ...pin, 
@@ -156,7 +160,6 @@ export default function MapOverlay() {
           <Popup 
             closeButton={false} 
             closeOnClick={true}
-            offset={[0, -4]}
           >
             <PinPopupContent 
               pin={pin} 
@@ -168,17 +171,6 @@ export default function MapOverlay() {
           </Popup>
         </Marker>
       ))}
-
-      {/* <Marker position={[50.1274, 19.7853]} icon={markerIcon}>
-        <Popup closeButton={false} offset={[0, -4]}>
-          topleft
-        </Popup>
-      </Marker>
-      <Marker position={[49.9702, 20.2245]} icon={markerIcon}>
-        <Popup closeButton={false} offset={[0, -4]}>
-          bottomright
-        </Popup>
-      </Marker> */}
     </>
   );
 }

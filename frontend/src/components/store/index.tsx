@@ -11,7 +11,7 @@ export const userAtom = atom({
 export const isMapSidemenuOpenAtom = atom(false);
 
 export const showAllUserPinsOnMapAtom = atom(false);
-
+export const showExistingLocationsOnMapAtom = atom(false);
 
 export default function StoreProvider({
   children,

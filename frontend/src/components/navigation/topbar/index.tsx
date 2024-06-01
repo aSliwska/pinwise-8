@@ -1,7 +1,7 @@
 "use client";
 
 import { isMapSidemenuOpenAtom, userAtom } from "@/components/store";
-import { ArrowLeftOutlined, MenuOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, MenuOutlined, PoweroffOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import { useAtom } from "jotai";
 import { Amita } from "next/font/google";
@@ -71,8 +71,9 @@ export default function TopBar() {
                 setUser((user) => ({ ...user, isAuthenticated: false }));
                 localStorage.removeItem("token");
               }}
+              className="flex flex-row items-center"
             >
-              &#8617;
+              <PoweroffOutlined />
             </Button>
           </div>
         ) : (

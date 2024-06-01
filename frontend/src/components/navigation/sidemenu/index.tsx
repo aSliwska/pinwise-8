@@ -1,30 +1,37 @@
-import { Switch, Input, Tabs, Select } from 'antd';
+import { Switch, Input, Tabs, Select, Form } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import { CloseOutlined } from '@ant-design/icons';
 import { useAtom, useAtomValue } from 'jotai';
-import { isMapSidemenuOpenAtom, showAllUserPinsOnMapAtom, userAtom } from '@/components/store';
+import { showExistingLocationsOnMapAtom, showAllUserPinsOnMapAtom, isMapSidemenuOpenAtom, userAtom } from '@/components/store';
+import { handleCompanySearch, handleServiceSearch } from '@/logic/map/existingLocationFetching';
 
-export async function handleSearch(event: React.FormEvent) {
-  event.preventDefault();
-  // alert("Search");
-  // todo: implement search
+async function fetchAllUserPins() {
+  // todo: implement fetch request
 }
 
-export async function showUserPins() {
+async function fetchCompanies(substring: string) {
+  
+}
+
+async function fetchServices(substring: string) {
+  // todo: database fetch
+}
+
+async function showUserPins() {
   alert("show user pins");
   // todo: show user pins 
 }
 
-export async function showExistingLocations() {
+async function showExistingLocations() {
   alert("show pins from google");
   // todo: show pins from google
 }
 
-export async function showHeatmap() {
+async function showHeatmap() {
   alert("show heatmap");
   // todo: show heatmap
 }
@@ -41,12 +48,14 @@ export default function SideMenu() {
 }
 
 function HeatmapMenu() {
-  const [service, setService] = useState({
-    id: 0,
-    name: "Firma 0",
-    logo: "/temp_rectangle.svg"
-  });
+  const [service, _] = useState<{
+    tagKey: string,
+    tagValue: string,
+    name: string,
+    logo: string,
+  }>(JSON.parse(localStorage.getItem('searchedService')!)); 
   const user = useAtomValue(userAtom);
+  const [showExistingLocationsOnMap, setShowExistingLocationsOnMap] = useAtom(showExistingLocationsOnMapAtom);
   const handleTimePeriodChange = (value: string) => {
     alert("time period change");
     // todo: fetch filtered data
@@ -67,7 +76,12 @@ function HeatmapMenu() {
             height={40}
             priority
           />
-          {service.name}
+          <div className='flex flex-col gap-[2px]'>
+            {service.name}
+            <span className='text-xs text-neutral-500'>
+              {service.tagKey + '=' + service.tagValue} {/* todo: change to fetched service display name */}
+            </span>
+          </div>
           
           <Link href='/map' className='flex ml-auto text-neutral-500 text-2xl'>
             <CloseOutlined/>
@@ -90,7 +104,9 @@ function HeatmapMenu() {
 
       <div className='flex flex-col p-6 gap-6'>
         <div className="flex flex-row gap-3 items-center">
-          <Switch onChange={showExistingLocations}/>
+          <Switch checked={showExistingLocationsOnMap} onChange={() => {
+              setShowExistingLocationsOnMap(!showExistingLocationsOnMap);
+            }}/>
           <div className='text-neutral-200'>Pokaż istniejące lokacje</div>
         </div>
 
@@ -118,132 +134,21 @@ function HeatmapMenu() {
 }
 
 function SearchMenu() {
-  const [companies, setCompanies] = useState([
-    {
-        id: 0,
-        name: "Firma 0",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 1,
-        name: "Firma 1",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 2,
-        name: "Firma 2",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 3,
-        name: "Firma 3",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 4,
-        name: "Firma 4",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 5,
-        name: "Firma 5",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 6,
-        name: "Firma 6",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 7,
-        name: "Firma 7",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 8,
-        name: "Firma 8",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 9,
-        name: "Firma 9",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 10,
-        name: "Firma 10",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 11,
-        name: "Firma 11",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 12,
-        name: "Firma 12",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 13,
-        name: "Firma 13",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 14,
-        name: "Firma 14",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-      id: 15,
-      name: "Firma 15",
-      logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 16,
-        name: "Firma 16",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 17,
-        name: "Firma 17",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 18,
-        name: "Firma 18",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 19,
-        name: "Firma 19",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 20,
-        name: "Firma 20",
-        logo: "/temp_rectangle.svg"
-    },
-  ]);
-  const [services, setServices] = useState([
-    {
-      id: 21,
-      name: "Usługa 0",
-      logo: "/temp_rectangle.svg"
-    },
-    {
-      id: 22,
-      name: "Usługa 1",
-      logo: "/temp_rectangle.svg"
-    },
-    {
-      id: 23,
-      name: "Usługa 2",
-      logo: "/temp_rectangle.svg"
-    },
-  ]); // TODO: fetch companies and services
+  const [companies, setCompanies] = useState<{
+    tagKey: string,
+    tagValue: string,
+    name: string,
+    logo: string,
+  }[]>([]);
+  const [services, setServices] = useState<{
+    tagKey: string,
+    tagValue: string,
+    name: string,
+    logo: string,
+  }[]>([]);
   const user = useAtomValue(userAtom);
   const [showAllUserPinsOnMap, setShowAllUserPinsOnMap] = useAtom(showAllUserPinsOnMapAtom);
+  const [form] = Form.useForm();
 
   return (
     <>
@@ -265,14 +170,19 @@ function SearchMenu() {
 
       <div className="flex flex-col p-6 gap-3 ">
         <div className='text-neutral-200'>Wybierz firmę/usługę:</div>
-        <form>
-          <Input 
-            id="search" 
-            placeholder="Szukaj..." 
-            prefix={<SearchOutlined className='text-xl' style={{color: '#a3a3a3'}}/>} 
-            style={{paddingInlineStart: 12, gap: 8}}
-            onChange={handleSearch}
-          />
+        <Form form={form}>
+          <Form.Item name='search'>
+            <Input
+              placeholder="Szukaj..." 
+              prefix={<SearchOutlined className='text-xl' style={{color: '#a3a3a3'}}/>} 
+              style={{paddingInlineStart: 12, gap: 8}}
+              onPressEnter={(event) => {
+                event.preventDefault();
+                handleCompanySearch(form.getFieldValue([['search']]), setCompanies);
+                handleServiceSearch(form.getFieldValue([['search']]), setServices);
+              }}
+            />
+          </Form.Item>
 
           <Tabs 
             id='tab' 
@@ -293,7 +203,7 @@ function SearchMenu() {
               <ServicesList services={services}/>
             </Tabs.TabPane>
           </Tabs>
-        </form>
+        </Form>
       </div>
     </>
   );
@@ -301,18 +211,29 @@ function SearchMenu() {
 
 function ServicesList(props: {
   services: {
-    id: number,
+    tagKey: string,
+    tagValue: string,
     name: string,
-    logo: string
+    logo: string,
   }[];
 }) {
+  const setSearchedService = useCallback((searchedService: {
+    tagKey: string;
+    tagValue: string;
+    name: string;
+    logo: string;
+  }) => {
+    localStorage.setItem('searchedService', JSON.stringify(searchedService));
+  }, []); 
+  
   return (
     <ul className='flex flex-col divide-y divide-neutral-600 overflow-y-auto max-h-full'>
       {props.services.map(service => (
-        <li key={service.id}>
+        <li key={service.name + '-' + service.tagKey + '-' + service.tagValue}>
           <Link 
-            href={"/map/" + service.id} 
+            href={"/map/heatmap"} 
             className="flex flex-row gap-3 items-center p-3 text-neutral-200 hover:bg-neutral-600 transition-all hover:text-neutral-200"
+            onClick={() => setSearchedService(service)}
           >
             <Image
               className="relative"
@@ -322,7 +243,12 @@ function ServicesList(props: {
               height={40}
               priority
             />
-            {service.name}
+            <div className='flex flex-col gap-[2px]'>
+              {service.name}
+              <span className='text-xs text-neutral-500'>
+                {service.tagKey + '=' + service.tagValue} {/* todo: change to fetched service display name */}
+              </span>
+            </div>
           </Link>
         </li>
       ))}
