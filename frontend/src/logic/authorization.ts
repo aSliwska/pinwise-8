@@ -1,4 +1,15 @@
-export const login = async (email: string, password: string) => {
+import { jwtDecode } from "jwt-decode";
+
+interface LoginResponse {
+  success: boolean;
+  message: string;
+  data?: any;
+}
+
+export const login = async (
+  email: string,
+  password: string
+): Promise<LoginResponse> => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
       method: "POST",
@@ -7,10 +18,14 @@ export const login = async (email: string, password: string) => {
       },
       body: JSON.stringify({ email, password }),
     });
+
     if (response.ok) {
       const { token } = await response.json();
       localStorage.setItem("token", token);
-      return { success: true, message: "Login successful" };
+
+      const decodedToken: any = jwtDecode(token);
+
+      return { success: true, message: "Login successful", data: decodedToken };
     } else {
       const errorMessage = await response.text();
       return { success: false, message: errorMessage };

@@ -62,7 +62,7 @@ export default function TopBar() {
             <span className="text-neutral-400 text-sm">
               Witaj, {user.name}!
             </span>
-            <Button ghost href={`/profile/${user.id}`}>
+            <Button ghost href={`/profile/${user.email}`}>
               Mój profil
             </Button>
             <Button
