@@ -3,7 +3,7 @@
 import { Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
-import PinPopupContent from '@/components/map/pin';
+import PinPopupContent from '@/components/map/pin/userPin';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 

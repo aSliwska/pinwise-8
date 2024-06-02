@@ -7,6 +7,7 @@ import { showExistingLocationsOnMapAtom } from '@/components/store';
 import { useEffect, useState } from 'react';
 import { fetchExistingLocations } from '@/logic/map/existingLocationFetching';
 import { Marker, Popup } from 'react-leaflet';
+import ExistingLocationPopupContent from '@/components/map/pin/existingLocationPin';
 
 export default function HeatmapOverlay() {
   const [markerIcon, _] = useState(new Icon({
@@ -29,31 +30,36 @@ export default function HeatmapOverlay() {
   }));
 
   const showExistingLocationsOnMap = useAtomValue(showExistingLocationsOnMapAtom);
-  const [searchedService, ____] = useState<{
-    tagKey: string,
-    tagValue: string,
-    name: string,
-    logo: string,
-  }>(JSON.parse(localStorage.getItem('searchedService')!)); 
+  const [searchedCompany, ____] = useState<{
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+  }>(JSON.parse(localStorage.getItem('searchedCompany')!)); 
   const [existingLocations, setExistingLocations] = useState<{
-    tagKey: string,
-    tagValue: string,
-    name: string,
-    logo: string,
     lat: number,
     lon: number,
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
   }[]>([]);
 
   useEffect(() => {
-    if (searchedService.name != "") {
-      fetchExistingLocations(
-        searchedService.name, 
-        searchedService.tagKey, 
-        searchedService.tagValue, 
-        setExistingLocations
-      );
+    if (searchedCompany !== null) {
+      fetchExistingLocations(searchedCompany, setExistingLocations);
     }
-  }, [searchedService]);
+  }, [searchedCompany]);
 
   return (
     <>
@@ -70,10 +76,7 @@ export default function HeatmapOverlay() {
               closeButton={false} 
               closeOnClick={true}
             >
-              bleh
-              {/* <ExistingLocationPopupContent 
-                pin={pin}
-              /> */} {/* todo: existing location popup content*/}
+              <ExistingLocationPopupContent pin={pin}/> 
             </Popup>
           </Marker>
         ))}

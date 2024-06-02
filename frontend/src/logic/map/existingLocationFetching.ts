@@ -4,14 +4,38 @@ import { Dispatch, SetStateAction } from "react";
 export async function handleCompanySearch(
   substring: string,
   setCompanies: Dispatch<SetStateAction<{
-    tagKey: string;
-    tagValue: string;
-    name: string;
-    logo: string;
-  }[]>>
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+  }[]>>,
+  services: {
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+  }[],
 ) {
-  substring = substring.trim();
+  const serviceMap = new Map<string, {id: number; name: string, logo: string}>(); 
+  services.forEach(s => {
+    serviceMap.set(s.service.tagKey+"="+s.service.tagValue, {
+      id: s.service.id,
+      name: s.service.name,
+      logo: s.service.logo,
+    });
+  });
 
+  substring = substring.trim();
   const possibleKeys = ["amenity", "shop", "leisure", "tourism"];
 
   const result: string = await fetch(
@@ -27,6 +51,10 @@ export async function handleCompanySearch(
           node[shop][name~'${substring}',i];
           node[leisure][name~'${substring}',i];
           node[tourism][name~'${substring}',i];
+          way[amenity][name~'${substring}',i];
+          way[shop][name~'${substring}',i];
+          way[leisure][name~'${substring}',i];
+          way[tourism][name~'${substring}',i];
         );
         out;
       `)
@@ -34,10 +62,15 @@ export async function handleCompanySearch(
   ).then((data)=>data.text());
 
   const companies: {
-    tagKey: string,
-    tagValue: string,
-    name: string,
-    logo: string,
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
   }[] = [];
   
   const resultRows = new Set(result.split("\n"));
@@ -49,13 +82,21 @@ export async function handleCompanySearch(
     const cols = row.split("\t");
 
     for (let i = 0; i < possibleKeys.length; i++) {
-      if (cols[i+1] !== "") {
-        companies.push({
-          tagKey: possibleKeys[i],
-          tagValue: cols[i+1],
-          name: cols[0],
-          logo: "/temp_rectangle.svg",
-        });
+      if (cols[i+1] !== "" && serviceMap.has(possibleKeys[i]+"="+cols[i+1])) {
+        const service = serviceMap.get(possibleKeys[i]+"="+cols[i+1]);
+        if (service !== null) {
+          companies.push({
+            type: "company",
+            companyName: cols[0],
+            service : {
+              id: service!.id,
+              tagKey: possibleKeys[i],
+              tagValue: cols[i+1],
+              name: service!.name,
+              logo: service!.logo,
+            },
+          });
+        }
         break;
       }
     }
@@ -64,91 +105,119 @@ export async function handleCompanySearch(
   setCompanies(companies);
 }
 
-export async function handleServiceSearch(
-    substring: string,
-    setServices: Dispatch<SetStateAction<{
-        tagKey: string;
-        tagValue: string;
-        name: string;
-        logo: string;
-    }[]>>
+export async function fetchExistingLocations(
+  searchedCompany : {
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    }
+  },
+  setExistingLocations: Dispatch<SetStateAction<{
+    lat: number,
+    lon: number,
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+  }[]>>
 ) {
-    substring = substring.trim();
+  const fetchedLocations: {
+    lat: number,
+    lon: number,
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+  }[] = [];
 
-    // try {
-    //     const response = await fetch(
-    //       `${process.env.NEXT_PUBLIC_API_URL}/map/services/namepattern`,
-    //       {
-    //         method: "GET",
-    //         headers: {
-    //           "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify({ substring }),
-    //       }
-    //     );
-    
-    //     if (response.ok) {
-    //       const data = await response.json(); 
-    //       setServices(data);
+  const result = (searchedCompany.type == "company") ? 
+  (
+    await fetch(
+      "https://overpass-api.de/api/interpreter",
+      {
+        method: "POST",
+        body: "data="+ encodeURIComponent(`
+          [bbox:${mapBounds.south}, ${mapBounds.west}, ${mapBounds.north}, ${mapBounds.east}]
+          [out:json][timeout:50];
+          node[${searchedCompany.service.tagKey}=${searchedCompany.service.tagValue}][name='${searchedCompany.companyName}'];
+          way[${searchedCompany.service.tagKey}=${searchedCompany.service.tagValue}][name='${searchedCompany.companyName}'];
+          out geom;
+        `)
+      },
+    ).then((data)=>data.json()) 
+  ) : (
+    await fetch(
+      "https://overpass-api.de/api/interpreter",
+      {
+        method: "POST",
+        body: "data="+ encodeURIComponent(`
+          [bbox:${mapBounds.south}, ${mapBounds.west}, ${mapBounds.north}, ${mapBounds.east}]
+          [out:json][timeout:50];
+          node[${searchedCompany.service.tagKey}=${searchedCompany.service.tagValue}];
+          way[${searchedCompany.service.tagKey}=${searchedCompany.service.tagValue}];
+          out geom;
+        `)
+      },
+    ).then((data)=>data.json())
+  );
+  
+  result.elements.forEach((element: any) => {
+    if (element.type === "node") {
+      fetchedLocations.push({
+        lat: element.lat,
+        lon: element.lon,
+        type: searchedCompany.type,
+        companyName: (searchedCompany.companyName !== undefined) ? searchedCompany.companyName : element.tags.name,
+        service : searchedCompany.service,
+      });
+    }
+    else {
+      fetchedLocations.push({
+        lat: element.bounds.minlat + (element.bounds.maxlat - element.bounds.minlat) / 2.0,
+        lon: element.bounds.minlon + (element.bounds.maxlon - element.bounds.minlon) / 2.0,
+        type: searchedCompany.type,
+        companyName: (searchedCompany.companyName !== undefined) ? searchedCompany.companyName : element.tags.name,
+        service : searchedCompany.service,
+      });
+    }
+  });
 
-    //       return { success: true, message: "Data fetched successfully" };
-    //     } 
-    //     else {
-    //       const errorMessage = await response.text(); 
-    //       return { success: false, message: errorMessage };
-    //     }
-    //   } catch (error) {
-    //     return { success: false, message: "An unexpected error occurred" };
-    //   }
-
-
-    // todo: set list of services fetched from db
+  setExistingLocations(fetchedLocations);
 }
 
-export async function fetchExistingLocations(
-    name: string, 
-    tagKey: string, 
-    tagValue: string, 
-    setExistingLocations: Dispatch<SetStateAction<{
-        tagKey: string;
-        tagValue: string;
-        name: string;
-        logo: string;
-        lat: number;
-        lon: number;
-}[]>>) {
-    const fetchedLocations: {
-        tagKey: string;
-        tagValue: string;
-        name: string;
-        logo: string;
-        lat: number;
-        lon: number;
-    }[] = [];
-
+export async function reverseGeocode(lat: number, lon: number, setAddress: Dispatch<SetStateAction<string>>) {
+  try {
     const result = await fetch(
-        "https://overpass-api.de/api/interpreter",
-        {
-            method: "POST",
-            body: "data="+ encodeURIComponent(`
-                [bbox:${mapBounds.south}, ${mapBounds.west}, ${mapBounds.north}, ${mapBounds.east}]
-                [out:json][timeout:50];
-                node[${tagKey}=${tagValue}][name='${name}'];
-                out;
-            `)
-        },
-    ).then((data)=>data.json());
+      `https://nominatim.openstreetmap.org/reverse?format=geojson&lat=${lat}&lon=${lon}&zoom=18&layer=address&addressdetails=1`,
+      { 
+        method: "GET",
+        cache: "force-cache"
+      }
+    ).then((data) => data.json());
 
-    result.elements.forEach((element: any) => {
-        fetchedLocations.push({
-            tagKey: tagKey,
-            tagValue: tagValue,
-            name: name,
-            logo: "/temp_rectangle.svg",
-            lat: element.lat,
-            lon: element.lon,
-        });
-    });
-
-    setExistingLocations(fetchedLocations);
+    if (result.features[0].properties.address.road !== undefined && result.features[0].properties.address.house_number !== undefined) {
+      setAddress("ul. " + result.features[0].properties.address.road + " " + result.features[0].properties.address.house_number);
+    }
+    else {
+      setAddress("lat: " + lat + ", lon: " + lon);
+    }
+  }
+  catch {
+    setAddress("lat: " + lat + ", lon: " + lon);
+  }  
 }

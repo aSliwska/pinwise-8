@@ -6,7 +6,11 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import ThemeProvider from "@/components/theme-provider";
 import StoreProvider from "@/components/store";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: false,
+});
 
 export const metadata: Metadata = {
   title: "PinWise",

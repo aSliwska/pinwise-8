@@ -9,7 +9,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const amita = Amita({ weight: "400", subsets: ["latin"] });
+const amita = Amita({ 
+  weight: "400", 
+  subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: false,
+ });
 
 export default function TopBar() {
   const [user, setUser] = useAtom(userAtom);
