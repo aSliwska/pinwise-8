@@ -1,32 +1,31 @@
 import { DragOutlined, DeleteOutlined } from '@ant-design/icons';
 import Image from "next/image";
-import { Ref, RefObject, useState } from 'react';
+import { Ref, RefObject, useEffect, useState } from 'react';
 import { Button } from 'antd';
+import ImageWithDefault from '@/components/imageWithDefault';
+import { reverseGeocode } from '@/logic/map/existingLocationFetching';
+import { deletePin, postNewPinCoordinates } from '@/logic/map/pinModification';
 
-async function postPinCoordinates(id: number, x: number, y: number) {
-  alert(`Post new coordinates for pin with id ${id}, x: ${x}, y: ${y}`);
-  //todo: implement post request
-}
-
-async function postDeletePin(id: number) {
-  alert(`Delete pin with id ${id}`);
-  //todo: implement delete request
-}
 
 export default function PinPopupContent(props: {
   pin: {
-    id: number;
-    x: number;
-    y: number;
-    name: string;
-    serviceType: string;
-    address: string;
-    lastModificationDate: string;
-    logo: string;
-    draggable: boolean;
-    selected: boolean;
-    inDeleteMode: boolean;
-    markerRef: RefObject<L.Marker>;
+    id: number,
+    lon: number,
+    lat: number,
+    type: string,
+    companyName: string,
+    lastModificationDate: Date,
+    service: {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+    draggable: boolean,
+    selected: boolean,
+    inDeleteMode: boolean,
+    markerRef?: RefObject<L.Marker> | undefined,
   },
   toggleDraggable: (id: number) => void;
   setCoordinates: (id: number, x: number, y: number, draggable: boolean) => void;
@@ -34,9 +33,15 @@ export default function PinPopupContent(props: {
   deletePin: (id: number) => void;
 }) {
   const [oldCoords, setOldCoords] = useState({
-    x: props.pin.x, 
-    y: props.pin.y
+    lon: props.pin.lon, 
+    lat: props.pin.lat,
   });
+  
+  const [address, setAddress] = useState("");
+  
+  useEffect(() => {
+    reverseGeocode(props.pin.lat, props.pin.lon, setAddress);
+  }, [props.pin.lat, props.pin.lon]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -47,13 +52,13 @@ export default function PinPopupContent(props: {
           </span>
           <div className="flex flex-row gap-2 justify-between">
             <Button type="primary" onClick={() => {
-                postPinCoordinates(props.pin.id, props.pin.x, props.pin.y);
+                postNewPinCoordinates(props.pin.id, props.pin.lon, props.pin.lat);
                 props.toggleDraggable(props.pin.id);
               }}>
               Tak
             </Button>
             <Button ghost style={{color: "#555555", borderColor: "#555555"}} onClick={() => {
-              props.setCoordinates(props.pin.id, oldCoords.x, oldCoords.y, false);
+              props.setCoordinates(props.pin.id, oldCoords.lon, oldCoords.lat, false);
             }}>
               Nie
             </Button>
@@ -67,7 +72,7 @@ export default function PinPopupContent(props: {
             </span>
             <div className="flex flex-row gap-2 justify-between items-center">
               <Button danger type="primary" onClick={() => {
-                  postDeletePin(props.pin.id);
+                  deletePin(props.pin.id);
                   props.deletePin(props.pin.id);
                 }}>
                 Tak
@@ -82,28 +87,30 @@ export default function PinPopupContent(props: {
         ) :(
           <>
             <div className="flex flex-row gap-3 items-center">
-              <Image
-                className="relative"
-                src={props.pin.logo}
+              <ImageWithDefault
+                className="relative p-1"
+                style={{'filter': 'invert(34%) sepia(0%) saturate(38%) hue-rotate(274deg) brightness(93%) contrast(98%)'}}
+                src={props.pin.service.logo}
                 alt="company logo or service icon"
-                width={40}
-                height={40}
+                width={32}
+                height={32}
                 priority
+                defaultSrc='/service_icons/default.svg'
               />
-              <span className="text-neutral-600 text-lg">
-                {props.pin.name}
+              <span className="flex text-neutral-600 text-lg">
+                {(props.pin.companyName !== undefined) ? props.pin.companyName : props.pin.service.name}
               </span>
             </div>
             
             <div className="flex flex-row gap-6 justify-between items-end">
               <div className="flex flex-col text-neutral-600 text-xs">
-                <span>{props.pin.serviceType}</span> 
-                <span>{props.pin.address}</span>
-                <span>{props.pin.lastModificationDate}</span>
+                {(props.pin.companyName !== undefined) && <span>{props.pin.service.name}</span>}
+                <span>{(address !== "") ? address : props.pin.lat + ", " + props.pin.lon}</span>
+                <span>{props.pin.lastModificationDate.getDate() + "/" + props.pin.lastModificationDate.getMonth() + "/" + props.pin.lastModificationDate.getFullYear()}</span>
               </div>
               <div className='flex flex-row text-lg gap-3 text-neutral-600'>
                 <DragOutlined onClick={() => {
-                  setOldCoords({x: props.pin.x, y: props.pin.y});
+                  setOldCoords({lon: props.pin.lon, lat: props.pin.lat});
                   props.toggleDraggable(props.pin.id);
                 }}/>
                 <div onClick={(e) => 

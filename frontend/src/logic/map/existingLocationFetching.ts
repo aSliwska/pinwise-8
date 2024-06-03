@@ -197,7 +197,50 @@ export async function fetchExistingLocations(
     }
   });
 
-  setExistingLocations(fetchedLocations);
+  function compare( a: {
+    lat: number,
+    lon: number,
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+  }, b: {
+    lat: number,
+    lon: number,
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+  } ) {
+    if (a == undefined && b == undefined) {
+      return 0;
+    }
+    if (a == undefined) {
+      return 1;
+    }
+    if (b == undefined) {
+      return -1;
+    }
+    if ( a.companyName! < b.companyName! ){
+      return -1;
+    }
+    if ( a.companyName! > b.companyName! ){
+      return 1;
+    }
+    return 0;
+  }
+
+  setExistingLocations(fetchedLocations.sort(compare));
 }
 
 export async function reverseGeocode(lat: number, lon: number, setAddress: Dispatch<SetStateAction<string>>) {

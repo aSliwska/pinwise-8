@@ -6,29 +6,10 @@ import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import { CloseOutlined } from '@ant-design/icons';
 import { useAtom, useAtomValue } from 'jotai';
-import { showExistingLocationsOnMapAtom, showAllUserPinsOnMapAtom, isMapSidemenuOpenAtom, userAtom } from '@/components/store';
+import { showExistingLocationsOnMapAtom, showUserPinsOnMapAtom, isMapSidemenuOpenAtom, userAtom, showHeatmapAtom } from '@/components/store';
 import { handleCompanySearch } from '@/logic/map/existingLocationFetching';
-import { fetchServices } from '@/logic/map/pinFetching';
+import { fetchAllServiceTypes } from '@/logic/map/pinFetching';
 import ImageWithDefault from '@/components/imageWithDefault';
-
-async function fetchAllUserPins() {
-  // todo: implement fetch request
-}
-
-async function showUserPins() {
-  alert("show user pins");
-  // todo: show user pins 
-}
-
-async function showExistingLocations() {
-  alert("show pins from google");
-  // todo: show pins from google
-}
-
-async function showHeatmap() {
-  alert("show heatmap");
-  // todo: show heatmap
-}
 
 const handleTimePeriodChange = (value: string) => {
   alert("time period change");
@@ -60,6 +41,8 @@ function HeatmapMenu() {
   }>(JSON.parse(localStorage.getItem('searchedCompany')!)); 
   const user = useAtomValue(userAtom);
   const [showExistingLocationsOnMap, setShowExistingLocationsOnMap] = useAtom(showExistingLocationsOnMapAtom);
+  const [showHeatmap, setShowHeatmap] = useAtom(showHeatmapAtom);
+  const [showUserPinsOnMap, setShowUserPinsOnMap] = useAtom(showUserPinsOnMapAtom);
 
   return (
     <>
@@ -119,14 +102,18 @@ function HeatmapMenu() {
         </div>
 
         <div className="flex flex-row gap-3 items-center">
-          <Switch defaultChecked onChange={showHeatmap}/>
+          <Switch checked={showHeatmap} onChange={() => {
+            setShowHeatmap(!showHeatmap);
+          }}/>
           <div className='text-neutral-200'>Pokaż mapę cieplną zainteresowania</div>
         </div>
 
         {user.isAuthenticated ? (
           <>
             <div className="flex flex-row gap-3 items-center">
-              <Switch onChange={showUserPins}/>
+              <Switch checked={showUserPinsOnMap} onChange={() => {
+                setShowUserPinsOnMap(!showUserPinsOnMap);
+              }}/>
               <div className='text-neutral-200'>Pokaż moje pineski</div>
             </div>
             <span className='text-neutral-400'>Kliknij na mapę, aby dodać nową pineskę.</span>
@@ -165,11 +152,11 @@ function SearchMenu() {
     },
   }[]>([]);
   const user = useAtomValue(userAtom);
-  const [showAllUserPinsOnMap, setShowAllUserPinsOnMap] = useAtom(showAllUserPinsOnMapAtom);
+  const [showUserPinsOnMap, setShowUserPinsOnMap] = useAtom(showUserPinsOnMapAtom);
   const [form] = Form.useForm();
 
   useEffect(() => {
-    fetchServices(setServices);
+    fetchAllServiceTypes(setServices);
   }, [form]);
 
   const getFilteredServices = useCallback((substr: string) => {
@@ -183,8 +170,8 @@ function SearchMenu() {
       <div className="flex flex-row p-6 gap-3 items-center">
         {user.isAuthenticated ? (
           <>
-            <Switch checked={showAllUserPinsOnMap} onChange={() => {
-              setShowAllUserPinsOnMap(!showAllUserPinsOnMap);
+            <Switch checked={showUserPinsOnMap} onChange={() => {
+              setShowUserPinsOnMap(!showUserPinsOnMap);
             }}/>
             <div className='text-neutral-200'>Pokaż moje pineski</div>
           </>

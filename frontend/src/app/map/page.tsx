@@ -4,59 +4,81 @@ import { Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
 import PinPopupContent from '@/components/map/pin/userPin';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { fetchAllUserPins, fetchMatchingUserPins } from '@/logic/map/pinFetching';
+import { useAtomValue } from 'jotai';
+import { showUserPinsOnMapAtom, userAtom } from '@/components/store';
 
 
-const allUserPins = [{
-  id: 0,
-  x: 50.06194,
-  y: 19.93686,
-  name: "Firma 0",
-  serviceType: "Typ usługi 0",
-  address: "ul. Temp 8",
-  lastModificationDate: "21/03/2025",
-  logo: "/temp_rectangle.svg",
-  draggable: false,
-  selected: false,
-  inDeleteMode: false,
-},
-{
-  id: 1,
-  x: 50.06147,
-  y: 19.93799,
-  name: "Firma 1",
-  serviceType: "Typ usługi 1",
-  address: "ul. Temp 10",
-  lastModificationDate: "22/03/2025",
-  logo: "/temp_rectangle.svg",
-  draggable: false,
-  selected: false,
-  inDeleteMode: false,
-}];
+export default function StartMap() {
+  const showUserPinsOnMap = useAtomValue(showUserPinsOnMapAtom);
 
-export default function MapOverlay() {
+  return (
+    <UserPinsLayer show={showUserPinsOnMap} forAllPins={true}/>
+  );
+}
+
+export function UserPinsLayer(props: {
+  show: boolean,
+  forAllPins: boolean,
+  searchedCompany?: {
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+  } | undefined,
+}) {
   const [markerIcon, _] = useState(new Icon({
-    iconUrl: 'marker.svg', 
+    iconUrl: '/marker.svg', 
     iconSize: [24, 40],
     iconAnchor: [12, 40],
     popupAnchor: [-1, -32],
   }));
   const [markerSelectedIcon, __] = useState(new Icon({
-    iconUrl: "marker-selected.svg",
+    iconUrl: "/marker-selected.svg",
     iconSize: [24, 40],
     iconAnchor: [12, 40],
     popupAnchor: [-1, -32],
   }));
-  
-  const [pins, setPins] = useState(allUserPins.map((pin) => {
-    return {
-      ...pin, 
-      markerRef: useRef<L.Marker>(null)
+
+  const user = useAtomValue(userAtom);
+
+  const [userPins, setUserPins] = useState<{
+    id: number,
+    lon: number,
+    lat: number,
+    type: string,
+    companyName: string,
+    lastModificationDate: Date,
+    service: {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+    draggable: boolean,
+    selected: boolean,
+    inDeleteMode: boolean,
+    markerRef: RefObject<L.Marker>,
+  }[]>([]);
+
+  useEffect(() => {
+    if (props.forAllPins) {
+      fetchAllUserPins(user.email, setUserPins);
     }
-  }));
+    else if (props.searchedCompany !== null) {
+      fetchMatchingUserPins(user.email, props.searchedCompany!, setUserPins);
+    }
+  }, [props.searchedCompany]);
 
   const toggleDraggable = useCallback((id: number) => {
-    setPins(pins.map((pin) => {
+    setUserPins(userPins.map((pin) => {
       if (pin.id === id) {
         return {
           ...pin,
@@ -66,10 +88,10 @@ export default function MapOverlay() {
       }
       return pin;
     }));
-  }, [pins, setPins]);
+  }, [userPins, setUserPins]);
 
   const setFocus = useCallback((id: number, selected: boolean) => {
-    setPins(pins.map((pin) => {
+    setUserPins(userPins.map((pin) => {
       if (pin.id === id) {
         if (!selected) {
           return {
@@ -90,25 +112,25 @@ export default function MapOverlay() {
       }
       return pin;
     }));
-  }, [pins, setPins]);
+  }, [userPins, setUserPins]);
 
-  const setCoordinates = useCallback((id: number, x: number, y: number, draggable: boolean) => {
-    setPins(pins.map((pin) => {
+  const setCoordinates = useCallback((id: number, lon: number, lat: number, draggable: boolean) => {
+    setUserPins(userPins.map((pin) => {
       if (pin.id === id) {
         return {
           ...pin,
-          x: x,
-          y: y,
+          lon: lon,
+          lat: lat,
           selected: draggable,
           draggable: draggable,
         };
       }
       return pin;
     }));
-  }, [pins, setPins]);
+  }, [userPins, setUserPins]);
 
   const setInDeleteMode = useCallback((id: number, inDeleteMode: boolean) => {
-    setPins(pins.map((pin) => {
+    setUserPins(userPins.map((pin) => {
       if (pin.id === id) {
         return {
           ...pin,
@@ -117,14 +139,14 @@ export default function MapOverlay() {
       }
       return pin;
     }));
-  }, [pins, setPins]);
+  }, [userPins, setUserPins]);
 
   const deletePin = useCallback((id: number) => {
-    setPins(pins.filter((pin) => pin.id !== id));
-  }, [pins, setPins]);
+    setUserPins(userPins.filter((pin) => pin.id !== id));
+  }, [userPins, setUserPins]);
   
   const eventHandlersArray = useMemo(() => {
-    return pins.map((pin) => {
+    return userPins.map((pin) => {
       return {
         dragend() {
           const marker = pin.markerRef.current;
@@ -143,14 +165,14 @@ export default function MapOverlay() {
         },
       };
     });
-  }, [pins, setCoordinates]);
+  }, [userPins, setCoordinates]);
 
   return (
     <>
-      {pins.map((pin, index) => (
+      {props.show && userPins.map((pin, index) => (
         <Marker 
           key={pin.id}
-          position={[pin.x, pin.y]} 
+          position={[pin.lon, pin.lat]} 
           icon={pin.selected ? markerSelectedIcon : markerIcon} 
           draggable={pin.draggable} 
           ref={pin.markerRef} 
