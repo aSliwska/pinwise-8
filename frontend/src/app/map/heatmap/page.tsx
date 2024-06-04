@@ -3,23 +3,25 @@
 import 'leaflet/dist/leaflet.css';
 import { useAtomValue } from 'jotai';
 import { Icon, LatLng } from 'leaflet';
-import { showExistingLocationsOnMapAtom, showHeatmapAtom, showUserPinsOnMapAtom } from '@/components/store';
-import { useEffect, useState } from 'react';
+import { showExistingLocationsOnMapAtom, showHeatmapAtom, showUserPinsOnMapAtom, timePeriodForPinDisplayAtom, userAtom } from '@/components/store';
+import { use, useCallback, useEffect, useState } from 'react';
 import { fetchExistingLocations } from '@/logic/map/existingLocationFetching';
 import { Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import ExistingLocationPopupContent from '@/components/map/pin/existingLocationPin';
-import { fetchHeatmapData } from '@/logic/map/pinFetching';
+import { fetchHeatmapData, fetchMatchingUserPins } from '@/logic/map/pinFetching';
 import { UserPinsLayer } from '../page';
 import { HeatmapLayer } from "react-leaflet-heatmap-layer-v3";
 import NewPin from '@/components/map/pin/newPin';
+import { time } from 'console';
 
 
 export default function Heatmap() {
   const showExistingLocationsOnMap = useAtomValue(showExistingLocationsOnMapAtom);
   const showHeatmap = useAtomValue(showHeatmapAtom);
   const showUserPinsOnMap = useAtomValue(showUserPinsOnMapAtom);
+  const user = useAtomValue(userAtom);
 
-  const [searchedCompany, ____] = useState<{
+  const [searchedCompany, _] = useState<{
     type: string,
     companyName: string | undefined,
     service : {
@@ -31,19 +33,101 @@ export default function Heatmap() {
     },
   }>(JSON.parse(localStorage.getItem('searchedCompany')!)); 
 
+  const [userPins, setUserPins] = useState<{
+    id: number,
+    lon: number,
+    lat: number,
+    type: string,
+    companyName: string | undefined,
+    lastModificationDate: Date,
+    service: {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+    draggable: boolean,
+    selected: boolean,
+    inDeleteMode: boolean,
+  }[]>([]);
+  useEffect(() => {
+    if (searchedCompany !== null) {
+      fetchMatchingUserPins(user.email, searchedCompany, setUserPins);
+    }
+  }, [searchedCompany]);
+
+  const timePeriodForPinDisplay = useAtomValue(timePeriodForPinDisplayAtom);
+  const [filtedUserPins, setFilteredUserPins] = useState<{
+    id: number,
+    lon: number,
+    lat: number,
+    type: string,
+    companyName: string | undefined,
+    lastModificationDate: Date,
+    service: {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+    draggable: boolean,
+    selected: boolean,
+    inDeleteMode: boolean,
+  }[]>([]);
+  useEffect(() => {
+    if (timePeriodForPinDisplay == '-1') {
+      setFilteredUserPins(userPins);
+    }
+    else {
+      setFilteredUserPins(userPins.filter((p) => (Date.now() - p.lastModificationDate.getTime()) <= parseInt(timePeriodForPinDisplay)));
+    }
+  }, [timePeriodForPinDisplay, userPins]);
+
   const [newMarkerPosition, setNewMarkerPosition] = useState<LatLng | undefined>();
+  const [showNewMarker, setShowNewMarker] = useState(false);
   const mapEvents = useMapEvents({
     click(e) {
-      setNewMarkerPosition((newMarkerPosition == undefined) ? e.latlng : undefined);
+      setNewMarkerPosition(e.latlng);
+      setShowNewMarker(!showNewMarker);
     },
-  })
+  });
+  const addNewPin = useCallback((newPin: {
+    id: number,
+    lon: number,
+    lat: number,
+    type: string,
+    companyName: string | undefined,
+    lastModificationDate: Date,
+    service: {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+    draggable: boolean,
+    selected: boolean,
+    inDeleteMode: boolean,
+  }) => {
+    setShowNewMarker(false);
+    setUserPins([...userPins, newPin]);
+  }, [userPins]);
 
   return (
     <>
       <ExistingLocationsLayer show={showExistingLocationsOnMap} searchedCompany={searchedCompany}/>
-      <UserPinsLayer show={showUserPinsOnMap} forAllPins={false} searchedCompany={searchedCompany}/>
-      <HeatmapOverlay show={showHeatmap} searchedCompany={searchedCompany}/>
-      {(newMarkerPosition !== undefined) && <NewPin lat={newMarkerPosition!.lat} lon={newMarkerPosition!.lng}/>}
+      <UserPinsLayer show={showUserPinsOnMap} pins={filtedUserPins} setPins={setUserPins}/>
+      <HeatmapOverlay show={showHeatmap} searchedCompany={searchedCompany} timePeriod={timePeriodForPinDisplay}/>
+      {showNewMarker && 
+        <NewPin 
+          lat={newMarkerPosition!.lat} 
+          lon={newMarkerPosition!.lng}
+          company={searchedCompany}
+          addNewPin={addNewPin}
+        />
+      }
     </>
   );
 }
@@ -112,6 +196,7 @@ export function ExistingLocationsLayer(props : {
 
 export function HeatmapOverlay(props : {
   show: boolean,
+  timePeriod: string,
   searchedCompany: {
     type: string,
     companyName: string | undefined,
@@ -127,6 +212,7 @@ export function HeatmapOverlay(props : {
   const [heatmapData, setHeatmapData] = useState<{
     lat: number,
     lon: number,
+    lastModificationDate: Date,
   }[]>([]);
 
   useEffect(() => {
@@ -135,24 +221,42 @@ export function HeatmapOverlay(props : {
     }
   }, [props.searchedCompany]);
 
+  const [filtedData, setFilteredData] = useState<{
+    lat: number,
+    lon: number,
+    lastModificationDate: Date,
+  }[]>([]);
+
+  useEffect(() => {
+    if (props.timePeriod == '-1') {
+      setFilteredData(heatmapData);
+    }
+    else {
+      setFilteredData(heatmapData.filter((p) => (Date.now() - p.lastModificationDate.getTime()) <= parseInt(props.timePeriod)));
+    }
+  }, [props.timePeriod, heatmapData]);
+
   return (
     <> 
       {props.show &&
         <HeatmapLayer
-        points={heatmapData}
+        points={filtedData}
         radius={10}
         max={1}
         longitudeExtractor={(p: {
           lat: number,
           lon: number,
-        }) => p.lat}
+          lastModificationDate: Date,
+        }) => p.lon}
         latitudeExtractor={(p: {
           lat: number,
           lon: number,
-        }) => p.lon}
+          lastModificationDate: Date,
+        }) => p.lat}
         intensityExtractor={(p: {
           lat: number,
           lon: number,
+          lastModificationDate: Date,
         }) => 1}
         />
       }

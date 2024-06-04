@@ -112,7 +112,7 @@ export async function fetchAllUserPins(email: string, setUserPins : Dispatch<Set
   lon: number,
   lat: number,
   type: string,
-  companyName: string,
+  companyName: string | undefined,
   lastModificationDate: Date,
   service: {
     id: number,
@@ -124,15 +124,14 @@ export async function fetchAllUserPins(email: string, setUserPins : Dispatch<Set
   draggable: boolean,
   selected: boolean,
   inDeleteMode: boolean,
-  markerRef: RefObject<L.Marker>,
 }[]>>) {
 
   // todo: set list of pins fetched from db
 
   setUserPins([{
     id: 0,
-    lon: 50.06194,
-    lat: 19.93686,
+    lon: 19.93686,
+    lat: 50.06194,
     type: "company",
     companyName: "Firma 0",
     lastModificationDate: new Date("2024-05-01"),
@@ -146,11 +145,10 @@ export async function fetchAllUserPins(email: string, setUserPins : Dispatch<Set
     draggable: false,
     selected: false,
     inDeleteMode: false,
-    markerRef: React.createRef(),
   }, {
     id: 1,
-    lon: 50.06147,
-    lat: 19.93799,
+    lon: 19.93799,
+    lat: 50.06147,
     type: "company",
     companyName: "Firma 1",
     lastModificationDate: new Date("2024-01-01"),
@@ -164,7 +162,6 @@ export async function fetchAllUserPins(email: string, setUserPins : Dispatch<Set
     draggable: false,
     selected: false,
     inDeleteMode: false,
-    markerRef: React.createRef(),
   }]);
 
 }
@@ -187,7 +184,7 @@ export async function fetchMatchingUserPins(
     lon: number,
     lat: number,
     type: string,
-    companyName: string,
+    companyName: string | undefined,
     lastModificationDate: Date,
     service: {
       id: number,
@@ -199,18 +196,17 @@ export async function fetchMatchingUserPins(
     draggable: boolean,
     selected: boolean,
     inDeleteMode: boolean,
-    markerRef: RefObject<L.Marker>,
 }[]>>) {
 
   // todo: set filtered list of pins fetched from db based on searchedCompany
 
   setUserPins([{
     id: 0,
-    lon: 50.06194,
-    lat: 19.93686,
+    lon: 19.93686,
+    lat: 50.06194,
     type: "company",
     companyName: "Firma 0",
-    lastModificationDate: new Date("2025-03-21"),
+    lastModificationDate: new Date("2024-05-01"),
     service: {
       id: 5,
       tagKey: "shop",
@@ -221,7 +217,6 @@ export async function fetchMatchingUserPins(
     draggable: false,
     selected: false,
     inDeleteMode: false,
-    markerRef: React.createRef(),
   }]);
 
 }
@@ -240,29 +235,35 @@ export async function fetchHeatmapData(company: {
   setHeatMapData: Dispatch<SetStateAction<{
     lat: number,
     lon: number,
+    lastModificationDate: Date,
 }[]>>) {  
   // todo: fetch heatmap data
 
   setHeatMapData([
     {
-      lat: 19.93586,
-      lon: 50.06184,
+      lon: 19.93586,
+      lat: 50.06184,
+      lastModificationDate: new Date("2024-05-01"),
     },
     {
-      lat: 19.93636,
-      lon: 50.06134,
+      lon: 19.93636,
+      lat: 50.06134,
+      lastModificationDate: new Date("2023-01-01"),
     },
     {
-      lat: 19.93646,
-      lon: 50.06184,
+      lon: 19.93646,
+      lat: 50.06184,
+      lastModificationDate: new Date("2024-01-01"),
     },
     {
-      lat: 19.93696,
-      lon: 50.06294,
+      lon: 19.93696,
+      lat: 50.06294,
+      lastModificationDate: new Date("2022-01-01"),
     },
     {
-      lat: 19.93486,
-      lon: 50.06184,
+      lon: 19.93486,
+      lat: 50.06184,
+      lastModificationDate: new Date("2024-06-01"),
     },
   ]);
 }

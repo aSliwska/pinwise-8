@@ -3,6 +3,11 @@
 import { MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import SideMenu from '@/components/navigation/sidemenu';
+import { useEffect, useState } from 'react';
+import { useAtomValue } from 'jotai';
+import { userAtom } from '@/components/store';
+import SiteTour from '@/components/map/siteTour';
+import { usePathname } from 'next/navigation';
 
 export const mapBounds = {
   north: 50.1274,
@@ -16,9 +21,12 @@ export default function MapPage({
 }: {
   children: React.ReactNode
 }) {
+  const [showTour, setShowTour] = useState<boolean>(localStorage.getItem('finishedTour') == null);
+
   return (
     <>
       <SideMenu/>
+      {showTour && <SiteTour setShowTour={setShowTour}/>}
       <div className='h-full w-full'>
         <MapContainer 
           center={[50.06194, 19.93686]} 
@@ -40,6 +48,5 @@ export default function MapPage({
         </MapContainer>
       </div>
     </>
-    
   );
 }

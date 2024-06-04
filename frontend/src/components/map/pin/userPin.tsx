@@ -13,7 +13,7 @@ export default function PinPopupContent(props: {
     lon: number,
     lat: number,
     type: string,
-    companyName: string,
+    companyName: string | undefined,
     lastModificationDate: Date,
     service: {
       id: number,
@@ -25,7 +25,6 @@ export default function PinPopupContent(props: {
     draggable: boolean,
     selected: boolean,
     inDeleteMode: boolean,
-    markerRef?: RefObject<L.Marker> | undefined,
   },
   toggleDraggable: (id: number) => void;
   setCoordinates: (id: number, x: number, y: number, draggable: boolean) => void;
@@ -38,10 +37,11 @@ export default function PinPopupContent(props: {
   });
   
   const [address, setAddress] = useState("");
+  const [runReverseGeocode, setRunReverseGeocode] = useState(false);
   
   useEffect(() => {
     reverseGeocode(props.pin.lat, props.pin.lon, setAddress);
-  }, [props.pin.lat, props.pin.lon]);
+  }, [runReverseGeocode]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -53,6 +53,7 @@ export default function PinPopupContent(props: {
           <div className="flex flex-row gap-2 justify-between">
             <Button type="primary" onClick={() => {
                 postNewPinCoordinates(props.pin.id, props.pin.lon, props.pin.lat);
+                setRunReverseGeocode(!runReverseGeocode);
                 props.toggleDraggable(props.pin.id);
               }}>
               Tak
@@ -106,7 +107,7 @@ export default function PinPopupContent(props: {
               <div className="flex flex-col text-neutral-600 text-xs">
                 {(props.pin.companyName !== undefined) && <span>{props.pin.service.name}</span>}
                 <span>{(address !== "") ? address : props.pin.lat + ", " + props.pin.lon}</span>
-                <span>{props.pin.lastModificationDate.getDate() + "/" + props.pin.lastModificationDate.getMonth() + "/" + props.pin.lastModificationDate.getFullYear()}</span>
+                <span>{props.pin.lastModificationDate.getDate().toString().padStart(2, '0') + "/" + (props.pin.lastModificationDate.getMonth()+1).toString().padStart(2, '0') + "/" + props.pin.lastModificationDate.getFullYear()}</span>
               </div>
               <div className='flex flex-row text-lg gap-3 text-neutral-600'>
                 <DragOutlined onClick={() => {

@@ -5,16 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import { CloseOutlined } from '@ant-design/icons';
-import { useAtom, useAtomValue } from 'jotai';
-import { showExistingLocationsOnMapAtom, showUserPinsOnMapAtom, isMapSidemenuOpenAtom, userAtom, showHeatmapAtom } from '@/components/store';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { showExistingLocationsOnMapAtom, showUserPinsOnMapAtom, isMapSidemenuOpenAtom, userAtom, showHeatmapAtom, timePeriodForPinDisplayAtom, isServicesSearchOpenAtom } from '@/components/store';
 import { handleCompanySearch } from '@/logic/map/existingLocationFetching';
 import { fetchAllServiceTypes } from '@/logic/map/pinFetching';
 import ImageWithDefault from '@/components/imageWithDefault';
-
-const handleTimePeriodChange = (value: string) => {
-  alert("time period change");
-  // todo: fetch filtered data
-};
 
 export default function SideMenu() {
   const pathname = usePathname();
@@ -43,6 +38,7 @@ function HeatmapMenu() {
   const [showExistingLocationsOnMap, setShowExistingLocationsOnMap] = useAtom(showExistingLocationsOnMapAtom);
   const [showHeatmap, setShowHeatmap] = useAtom(showHeatmapAtom);
   const [showUserPinsOnMap, setShowUserPinsOnMap] = useAtom(showUserPinsOnMapAtom);
+  const setTimePeriodForPinDisplay = useSetAtom(timePeriodForPinDisplayAtom);
 
   return (
     <>
@@ -80,15 +76,15 @@ function HeatmapMenu() {
         </div>
         <div className='flex flex-row justify-between items-center mt-3'>
           <span className='text-neutral-200'>Wyświetl dane:</span>
-            <Select defaultValue='5' onChange={handleTimePeriodChange} 
+            <Select defaultValue={'-1'} onChange={(newVal) => setTimePeriodForPinDisplay(newVal)} 
               placement="bottomRight" popupMatchSelectWidth={false}
               options={[
-                { value: '0', label: 'Z tego tygodnia' },
-                { value: '1', label: 'Z tego miesiąca' },
-                { value: '2', label: 'Z ostatnich 3 miesięcy' },
-                { value: '3', label: 'Z ostatnich 6 miesięcy' },
-                { value: '4', label: 'Z tego roku' },
-                { value: '5', label: 'Wszystkie' }
+                { value: '604800000', label: 'Z tego tygodnia' },
+                { value: '2628002880', label: 'Z tego miesiąca' },
+                { value: '7884008640', label: 'Z ostatnich 3 miesięcy' },
+                { value: '15768000000', label: 'Z ostatnich 6 miesięcy' },
+                { value: '31536000000', label: 'Z ostatnich 12 miesięcy' },
+                { value: '-1', label: 'Wszystkie' }
             ]}/>
         </div>
       </div>
@@ -152,6 +148,7 @@ function SearchMenu() {
     },
   }[]>([]);
   const user = useAtomValue(userAtom);
+  const [isServicesSearchOpen, setIsServicesSearchOpen] = useAtom(isServicesSearchOpenAtom);
   const [showUserPinsOnMap, setShowUserPinsOnMap] = useAtom(showUserPinsOnMapAtom);
   const [form] = Form.useForm();
 
@@ -201,7 +198,8 @@ function SearchMenu() {
 
           <Tabs 
             id='tab' 
-            defaultActiveKey="1"
+            activeKey={(isServicesSearchOpen) ? "2" : "1"}
+            onTabClick={(key) => {setIsServicesSearchOpen(key == "2")}}
           >
             <Tabs.TabPane 
               tab="Firmy" 
