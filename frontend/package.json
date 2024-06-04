@@ -18,12 +18,13 @@
     "next": "14.2.2",
     "react": "^18",
     "react-dom": "^18",
-    "react-leaflet": "^4.2.1"
+    "react-leaflet": "^4.2.1",
+    "react-leaflet-heatmap-layer-v3": "3.0.3-beta-1"
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
     "eslint": "^8",
     "eslint-config-next": "14.2.2",
     "postcss": "^8",
