@@ -18,36 +18,31 @@ create table pinwise.user (
 
 CREATE TABLE pinwise.service(
 	id SERIAL PRIMARY KEY,
-	name varchar(128),
-	tag_key TEXT,
-	tag_value TEXT,
-	icon_name TEXT
+	name varchar(128) NOT NULL,
+	tag_key TEXT NOT NULL,
+	tag_value TEXT NOT NULL
+);
+
+create table pinwise.pin_type(
+	id SERIAL PRIMARY KEY,
+	category varchar(16) NOT NULL --firma lub usługa (constraint)
 );
 
 create table pinwise.pin(
 	id SERIAL PRIMARY KEY,
-	user_id int NOT NULL UNIQUE,
+	user_id int NOT NULL,
 	coordinateX float NOT NULL,
 	coordinateY float NOT NULL,
 	adres varchar(512) NOT NULL,
-	id_serwis int,
-	modification_date DATE, --YYYY-MM-DD format
+	id_serwis int NOT NULL,
+	modification_date TIMESTAMP NOT NULL DEFAULT NOW(), --YYYY-MM-DD format
+	company_name VARCHAR(512),
+	type_id int, 
 	constraint fk_pin foreign key (user_id) references pinwise.user (id) on delete CASCADE,
-	CONSTRAINT fk_serv FOREIGN KEY (id_serwis) REFERENCES pinwise.service(id) ON DELETE SET NULL
+	CONSTRAINT fk_serv FOREIGN KEY (id_serwis) REFERENCES pinwise.service(id) ON DELETE cascade,
+	CONSTRAINT fk_pint FOREIGN KEY (type_id) REFERENCES pinwise.pin_type(id)
 );
 
 
 
-create table pinwise.pin_type(
-	id SERIAL PRIMARY KEY,
-	category varchar(16) NOT NULL, --firma lub usługa (constraint), ew. 'inne'
-	nameof varchar(1024) NOT NULL --np Lidl lub Fryzjer, lub sklep
-);
 
-create table pinwise.categories(
-	id_pin_type INT not null,
-	id_pin INT not null,
-	constraint fk_pinT foreign key (id_pin_type) references pinwise.pin_type (id) on delete set null,
-	constraint fk_pin foreign key (id_pin) references pinwise.pin(id) on delete cascade,
-	constraint pk primary key (id_pin_type, id_pin)
-);

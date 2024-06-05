@@ -6,8 +6,7 @@ BEGIN
         RAISE EXCEPTION 'Only administrators can change usernames!';
     END IF;
     RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+end $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER check_admin_permission_trigger
 BEFORE UPDATE OF username ON pinwise.user
@@ -22,8 +21,7 @@ BEGIN
         RAISE EXCEPTION 'Invalid email address format!';
     END IF;
     RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+end $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER validate_email_trigger
 BEFORE INSERT OR UPDATE OF email ON pinwise.user
@@ -44,8 +42,7 @@ BEGIN
         RAISE EXCEPTION 'Coordinates already exist in the database!';
     END IF;
     RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+end $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER validate_coordinates
 BEFORE INSERT OR UPDATE OF coordinateX, coordinateY ON pinwise.pin
@@ -60,10 +57,21 @@ BEGIN
         RAISE EXCEPTION 'User age must be bigger than 0!';
     END IF;
     RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+end $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER validate_age
 BEFORE INSERT OR UPDATE OF age ON pinwise.user
 FOR EACH ROW EXECUTE FUNCTION pinwise.check_age();
 
+
+--5---------------------------
+CREATE OR REPLACE FUNCTION pinwise.set_date()
+RETURNS TRIGGER AS $$
+BEGIN 
+	UPDATE pinwise.pin SET modification_date = NOW() WHERE id = NEW.id;
+	RETURN new;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER date_update
+BEFORE UPDATE ON pinwise.pin
+FOR EACH ROW EXECUTE FUNCTION pinwise.set_date();
