@@ -35,7 +35,7 @@ create table pinwise.pin(
 	coordinateY float NOT NULL,
 	adres varchar(512) NOT NULL,
 	id_serwis int NOT NULL,
-	modification_date TIMESTAMP NOT NULL DEFAULT NOW(), --YYYY-MM-DD format
+	modification_date TIMESTAMP NOT NULL DEFAULT NOW(), --YYYY-MM-DD godzina:minuta:sekunda z 6 miejscami po przecinku
 	company_name VARCHAR(512),
 	type_id int, 
 	constraint fk_pin foreign key (user_id) references pinwise.user (id) on delete CASCADE,
