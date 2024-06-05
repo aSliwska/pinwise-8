@@ -64,8 +64,7 @@ BEFORE INSERT OR UPDATE OF age ON pinwise.user
 FOR EACH ROW EXECUTE FUNCTION pinwise.check_age();
 
 
---5---------------------------
-CREATE OR REPLACE FUNCTION pinwise.set_date()
+--5--------------------------
 RETURNS TRIGGER AS $$
 BEGIN 
 	UPDATE pinwise.pin SET modification_date = NOW() WHERE id = NEW.id;
