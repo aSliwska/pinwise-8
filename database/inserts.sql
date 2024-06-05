@@ -365,29 +365,21 @@ INSERT INTO pinwise.pin_type (id, category) VALUES
 
 
 --4
-INSERT INTO pinwise.pin(user_id, coordinateX, coordinateY, adres, id_serwis, modification_date) 
-VALUES 
-((SELECT id FROM pinwise.user WHERE username='Jan1'), 21.37, 1.69, 'address1', 1, '2022-01-01'),
-((SELECT id FROM pinwise.user WHERE username='Anna'), -22.36, 2.71, 'address2', 2, '2022-01-02'),
-((SELECT id FROM pinwise.user WHERE username='Piotr'), 23.36, 3.72, 'address3', 3, '2022-01-03'),
-((SELECT id FROM pinwise.user WHERE username='Katarzyna'), -24.36, 4.73, 'address4', 4, '2022-01-04'),
-((SELECT id FROM pinwise.user WHERE username='Andrzej'), 25.36, 5.74, 'address5', 5, '2022-01-05'),
-((SELECT id FROM pinwise.user WHERE username='Agnieszka'), -26.36, -6.75, 'address6', 6, '2022-01-06'),
-((SELECT id FROM pinwise.user WHERE username='Tomasz'), 27.36, 7.76, 'address7', 7, '2022-01-07'),
-((SELECT id FROM pinwise.user WHERE username='Ewa'), 28.36, 8.77, 'address8', 8, '2022-01-08'),
-((SELECT id FROM pinwise.user WHERE username='Marek'), -29.36, 9.78, 'address9', 9, '2022-01-09'),
-((SELECT id FROM pinwise.user WHERE username='Magdalena'), 30.36, -10.79, 'address10', 10, '2022-01-10'),
-((SELECT id FROM pinwise.user WHERE username='Michal33'), 31.36, 11.80, 'address11', 11, '2022-01-11'),
-((SELECT id FROM pinwise.user WHERE username='Dorota'), -32.36, 12.81, 'address12', 12, '2022-01-12'),
-((SELECT id FROM pinwise.user WHERE username='Pawel'), 33.36, -13.82, 'address13', 13, '2022-01-13'),
-((SELECT id FROM pinwise.user WHERE username='Joanna'), 34.36, 14.83, 'address14', 14, '2022-01-14'),
-((SELECT id FROM pinwise.user WHERE username='Krzysztof'), -35.36, -15.84, 'address15', 15, '2022-01-15'),
-((SELECT id FROM pinwise.user WHERE username='Barbara'), 36.36, 16.85, 'address16', 16, '2022-01-16'),
-((SELECT id FROM pinwise.user WHERE username='Marcin'), 37.36, 17.86, 'address17', 17, '2022-01-17'),
-((SELECT id FROM pinwise.user WHERE username='Monika'), 38.36, -18.87, 'address18', 18, '2022-01-18'),
-((SELECT id FROM pinwise.user WHERE username='Grzegorz'), -39.36, 19.88, 'address19', 19, '2022-01-19'),
-((SELECT id FROM pinwise.user WHERE username='Malgorzata'), 40.36, 20.89, 'address20', 20, '2022-01-20');
+INSERT INTO pinwise.pin (user_id, coordinateX, coordinateY, adres, id_serwis, modification_date, company_name, type_id) VALUES 
+(1, 23.456, 89.012, '123 Main St', 1, NOW(), 'ABC Company', 1),
+(2, 87.654, 21.098, '456 Elm St', 2, NOW(), 'XYZ Company', 2),
+(3, 12.345, 67.890, '789 Oak St', 3, NOW(), 'DEF Company', 1),
+(4, 8.765, 43.210, '321 Pine St', 4, NOW(), 'GHI Company', 2),
+(5, 34.567, 67.123, '567 Maple St', 5, NOW(), 'JKL Company', 1),
+(6, 76.543, 10.987, '890 Cherry St', 6, NOW(), 'MNO Company', 2),
+(7, 45.678, 32.109, '987 Walnut St', 7, NOW(), 'PQR Company', 1),
+(8, 21.098, 76.543, '654 Birch St', 8, NOW(), 'STU Company', 1),
+(9, 67.890, 8.765, '321 Cedar St', 9, NOW(), 'VWX Company', 2),
+(10, 43.210, 54.321, '876 Pine St', 10, NOW(), 'YZ Company', 1);
 
+--SELECT (password = crypt('entered password', password)) AS pswmatch from pinwise.user p where p.username = 'jusernejm';
+--SELECT (password = crypt('haslomaslo', password)) AS pswmatch from pinwise.user p where p.username = 'jusernejm';
+--SELECT (password = crypt('hasłomasło', password)) AS pswmatch from pinwise.user p where p.username = 'jusernejm'; -- zwraca true
 
 
 --SELECT (password = crypt('entered password', password)) AS pswmatch from pinwise.user p where p.username = 'jusernejm';
