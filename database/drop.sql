@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS pinwise.pin_type CASCADE;
 DROP TABLE IF EXISTS pinwise.pin CASCADE;
 DROP TABLE IF EXISTS pinwise.user CASCADE;
 DROP TABLE IF EXISTS pinwise.service CASCADE;
+DROP TABLE IF EXISTS pinwise.passwd_toekn CASCADE;
 
 -- Drop triggers
 DROP TRIGGER IF EXISTS check_admin_permission_trigger ON pinwise.user;
