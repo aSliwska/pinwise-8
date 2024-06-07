@@ -43,6 +43,11 @@ create table pinwise.pin(
 	CONSTRAINT fk_pint FOREIGN KEY (type_id) REFERENCES pinwise.pin_type(id)
 );
 
-
+create table pinwise.passwd_token (
+	id INT not null,
+	token text,
+	expiry_date TIMESTAMP,
+	constraint fk_id foreign key (id) references pinwise.user(id) on delete CASCADE
+)
 
 
