@@ -31,7 +31,7 @@ export default function TopBar() {
     <div className="flex w-screen h-12 pr-5 pl-2 justify-between items-center bg-[#2E2E2E] border-[#282828] border-b">
       <div className="flex flex-grow basis-0 h-full justify-start items-center">
         {pathname.substring(0, 4) != "/map" ? (
-          <Link href="/map" className="flex flex-row gap-4">
+          <Link href="/map" className="flex flex-row gap-4 pl-3">
             <ArrowLeftOutlined style={{ color: "#d4d4d4", fontSize: 20 }} />
             <div className={"text-neutral-400 text-sm"}>Powrót do mapy</div>
           </Link>
