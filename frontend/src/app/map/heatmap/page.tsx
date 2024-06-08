@@ -120,7 +120,7 @@ export default function Heatmap() {
       <ExistingLocationsLayer show={showExistingLocationsOnMap} searchedCompany={searchedCompany}/>
       <UserPinsLayer show={showUserPinsOnMap} pins={filtedUserPins} setPins={setUserPins}/>
       <HeatmapOverlay show={showHeatmap} searchedCompany={searchedCompany} timePeriod={timePeriodForPinDisplay}/>
-      {showNewMarker && 
+      {(showNewMarker && user.isAuthenticated) && 
         <NewPin 
           lat={newMarkerPosition!.lat} 
           lon={newMarkerPosition!.lng}
