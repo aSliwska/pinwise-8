@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class AuthService implements UserDetailsService {
 
@@ -53,7 +55,7 @@ public class AuthService implements UserDetailsService {
         else //existing
         {
             passwdtoken.setToken(token);
-
+            passwdtoken.setExpiryDate(LocalDateTime.now().plusMinutes(PasswdResetToken.EXPIRATION));
         }
 
         passwdResetTokenRepository.save(passwdtoken);
@@ -63,6 +65,7 @@ public class AuthService implements UserDetailsService {
     public User getByResetPasswordToken(String token) {
         return repository.findUserByPasswdResetToken(token);
     }
+
 
     public void updatePassword(User user, String newPassword) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -74,7 +77,9 @@ public class AuthService implements UserDetailsService {
         repository.save(user);
     }
 
-
+    public PasswdResetToken getByUser(User user) {
+        return passwdResetTokenRepository.findByUser(user);
+    }
 
 
 

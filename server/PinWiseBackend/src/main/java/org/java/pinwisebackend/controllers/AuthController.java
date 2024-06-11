@@ -3,11 +3,9 @@ package org.java.pinwisebackend.controllers;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.java.pinwisebackend.DTOs.JwtDto;
-import org.java.pinwisebackend.DTOs.PasswordDto;
-import org.java.pinwisebackend.DTOs.SignInDto;
-import org.java.pinwisebackend.DTOs.SignUpDto;
+import org.java.pinwisebackend.DTOs.*;
 import org.java.pinwisebackend.configurations.TokenProvider;
+import org.java.pinwisebackend.entities.PasswdResetToken;
 import org.java.pinwisebackend.entities.User;
 import org.java.pinwisebackend.entities.Utility;
 import org.java.pinwisebackend.services.AuthService;
@@ -24,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -78,15 +77,28 @@ public class AuthController {
     // }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> processForgotPassword(HttpServletRequest request, Model model) {
-        String email = request.getParameter("email");
-        String token = UUID.randomUUID().toString();
+    public ResponseEntity<?> processForgotPassword(HttpServletRequest request, @RequestBody EmailDto data) {
+        String email = data.email();
+
 
         try {
+
+            User found = service.loadUserByUsername(email);
+            if(found == null) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No account associated with this e-mail found.");
+
+            PasswdResetToken rsttoken = service.getByUser(found);
+
+            if(rsttoken != null) {
+                if (rsttoken.isTokenCooldown())
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("You must wait for 1 minute before attempting to reset your password again.");
+
+            }
+
+
+            String token = UUID.randomUUID().toString();
             service.updateResetPasswordToken(token, email);
             String resetPasswordLink = Utility.getSiteURL(request) + "/reset_password?token=" + token;
             mailService.sendEmail(email, resetPasswordLink);
-            model.addAttribute("message", "We have sent a reset password link to your email. Please check.");
 
         } catch (UnsupportedEncodingException | MessagingException e)
         {
@@ -96,7 +108,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.toString());
         }
 
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok("We have sent a reset password link to your email. Please check.");
     }
 
     @PostMapping("/reset-password")
@@ -106,10 +118,15 @@ public class AuthController {
         String password = data.getNewPassword();
 
         User user = service.getByResetPasswordToken(token);
-
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Invalid token");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Invalid token.");
         }
+
+        PasswdResetToken rsttoken = service.getByUser(user);
+        if (rsttoken.isTokenExpired())
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("This link has expired.");
+        if(!Objects.equals(rsttoken.getToken(), token))
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Invalid token.");
 
 
         service.updatePassword(user, password);

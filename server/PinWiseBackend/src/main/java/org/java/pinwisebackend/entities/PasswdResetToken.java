@@ -7,7 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 
 @Data
@@ -17,28 +21,26 @@ import java.util.Calendar;
 @Entity(name = "passwd_token")
 @Table(name = "passwd_token")
 public class PasswdResetToken {
-    private static final int EXPIRATION = 60 * 24;
+    public static final int EXPIRATION = 60 * 24;
 
     public PasswdResetToken(String token, User user)
     {
         this.user = user;
         this.token = token;
-
-        final Calendar cal = Calendar.getInstance();
-        cal.setTime(new Timestamp(System.currentTimeMillis()));
-        cal.add(Calendar.MINUTE, EXPIRATION);
-        this.expiryDate = new Date( cal.getTime().getTime());
+        this.expiryDate =  LocalDateTime.now().plusMinutes(EXPIRATION);
     }
 
-    private boolean isTokenExpired() {
-        final Calendar cal = Calendar.getInstance();
-        return this.expiryDate.before(cal.getTime());
+
+
+    public boolean isTokenExpired() {
+        LocalDateTime now = LocalDateTime.now();
+        return expiryDate.isBefore(now);
     }
 
-    private boolean isTokenCooldown() {
-        final Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MINUTE, EXPIRATION-5);
-        return cal.getTime().before(this.expiryDate);
+    public boolean isTokenCooldown() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime cooldownTime = expiryDate.minusMinutes(EXPIRATION - 1);
+        return cooldownTime.isAfter(now);
     }
 
 
@@ -57,5 +59,5 @@ public class PasswdResetToken {
     private User user;
 
     @Column(name = "expiry_date", nullable = false)
-    private Date expiryDate;
+    private LocalDateTime expiryDate;
 }
