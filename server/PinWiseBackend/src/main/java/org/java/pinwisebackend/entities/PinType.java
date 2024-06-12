@@ -20,22 +20,11 @@ public class PinType {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToMany
-    @JoinTable(
-            name = "categories"
-            , joinColumns = {
-                    @JoinColumn(name = "id_pin_type")
-                    }
-                    ,inverseJoinColumns = {
-                    @JoinColumn(name = "id_pin")
-            }
-    )
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Pin> pins;
 
     @Column(name = "category", nullable = false)
     private String category;
 
-    @Column(name = "nameof", nullable = false)
-    private String nameOf;
 
 }

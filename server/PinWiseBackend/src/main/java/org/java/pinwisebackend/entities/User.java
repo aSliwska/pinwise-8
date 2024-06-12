@@ -21,7 +21,7 @@ public class User implements UserDetails {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "username", nullable = false)
@@ -47,6 +47,9 @@ public class User implements UserDetails {
 
     @Column(name = "isadmin")
     private Boolean isAdmin;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private PasswdResetToken passwdResetToken;
 
 //    @OneToMany(mappedBy = "user")
 //    private List<Pin> pin;
