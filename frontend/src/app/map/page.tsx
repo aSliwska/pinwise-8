@@ -7,6 +7,8 @@ import PinPopupContent from '@/components/map/pin';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 export default function MapPage() {
+  
+
   const markerIcon = new Icon({iconUrl: 'marker.svg', iconSize: [24, 40]});
   const markerSelectedIcon = new Icon({iconUrl: 'marker-selected.svg', iconSize: [24, 40]});
   const [pins, setPins] = useState([{
@@ -59,27 +61,43 @@ export default function MapPage() {
     }));
   }, [pins, setPins]);
 
+  const createEventHandlers = useMemo(
+    () => (pin: { markerRef: { current: any; }; id: number; }) => ({
+      dragend() {
+        let marker = pin.markerRef.current;
+        if (marker != null) {
+          let coords = marker.getLatLng();
+          setCoordinates(pin.id, coords.lat, coords.lng, true);
+        }
+      },
+    }),
+    [setCoordinates]
+  );
+
   return (
     <>
       {pins.map((pin) => (
         <Marker 
+          key={pin.id}
           position={[pin.x, pin.y]} 
           icon={pin.draggable ? markerSelectedIcon : markerIcon} 
           draggable={pin.draggable} 
           ref={pin.markerRef} 
-          eventHandlers={useMemo(
-            () => ({
-              dragend() {
-                let marker = pin.markerRef.current;
-                if (marker != null) {
-                  let coords = marker.getLatLng();
+          eventHandlers={
+          //   useMemo(
+          //   () => ({
+          //     dragend() {
+          //       let marker = pin.markerRef.current;
+          //       if (marker != null) {
+          //         let coords = marker.getLatLng();
         
-                  setCoordinates(pin.id, coords.lat, coords.lng, true);
-                }
-              },
-            }), // todo: im going to cry
-            [pin, setCoordinates],
-          )}
+          //         setCoordinates(pin.id, coords.lat, coords.lng, true);
+          //       }
+          //     },
+          //   }), // todo: im going to cry
+          //   [pin, setCoordinates],
+          // )
+          createEventHandlers(pin)}
           zIndexOffset={pin.draggable ? 9001 : 0}
         >
           <Popup closeButton={false} offset={[0, -4]}>
