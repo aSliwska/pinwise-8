@@ -68,9 +68,14 @@ FOR EACH ROW EXECUTE FUNCTION pinwise.check_age();
 CREATE OR REPLACE FUNCTION pinwise.set_date()
 RETURNS TRIGGER AS $$
 BEGIN 
-	UPDATE pinwise.pin SET modification_date = NOW() WHERE id = NEW.id;
-	RETURN new;
+    NEW.modification_date = NOW();
+    RETURN NEW;
 END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER date_update
+BEFORE UPDATE ON pinwise.pin
+FOR EACH ROW EXECUTE FUNCTION pinwise.set_date();
+
 
 CREATE TRIGGER date_update
 BEFORE UPDATE ON pinwise.pin
