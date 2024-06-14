@@ -1,5 +1,6 @@
 package org.java.pinwisebackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ import java.util.Calendar;
 @NoArgsConstructor
 @Entity(name = "passwd_token")
 @Table(name = "passwd_token")
+@JsonIgnoreProperties({"hibernateLazyInitializer","user"})
 public class PasswdResetToken {
     public static final int EXPIRATION = 60 * 24;
 

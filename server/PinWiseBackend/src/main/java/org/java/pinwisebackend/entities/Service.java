@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.mapping.Join;
 
 import java.util.List;
 
@@ -13,21 +14,24 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "pin_type")
-@Table(name = "pin_type")
 @JsonIgnoreProperties({"hibernateLazyInitializer","pins"})
-public class PinType {
+@Entity(name = "service")
+@Table(name = "service")
+public class Service {
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "tag_key", nullable = false)
+    private String tagKey;
+
+    @Column(name = "tag_value", nullable = false)
+    private String tagValue;
+
+    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Pin> pins;
-
-    @Column(name = "category", nullable = false)
-    private String category;
-
-
 
 }
