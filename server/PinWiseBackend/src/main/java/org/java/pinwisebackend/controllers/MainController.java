@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -132,14 +133,15 @@ public class MainController {
 
     @Transactional
     @DeleteMapping("/deletePin")
-    ResponseEntity<Pin> deletePin(@RequestParam("email") String email,@RequestParam("id") Long id){
+    ResponseEntity<Long> deletePin(@RequestParam("email") String email,@RequestParam("id") Long id){
         User user = repository.findByEmail(email);
         if(user == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        pinRepository.deletePinByIdAndUser(id,user);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        pinRepository.deleteByIdAndUserId(id,user);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
@@ -157,7 +159,9 @@ public class MainController {
         newPin.setCoordinateX(((Number)(obj.get("x_coord"))).doubleValue());
         newPin.setCoordinateY(((Number)(obj.get("y_coord"))).doubleValue());
         newPin.setCompanyName((String)obj.get("company_name"));
+        newPin.setAdres((String) obj.get("adres"));
         newPin.setSerwis(((Number)(obj.get("id_serwis"))).longValue());
+        newPin.setModificationDate(LocalDateTime.now());
 
         pinRepository.save(newPin);
 
