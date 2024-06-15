@@ -1,5 +1,7 @@
 package org.java.pinwisebackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
@@ -17,11 +19,12 @@ import java.util.List;
 @Entity(name = "user")
 @Table(name = "user")
 @EqualsAndHashCode(of = "id")
+@JsonIgnoreProperties({"hibernateLazyInitializer","pin"})
 public class User implements UserDetails {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "username", nullable = false)
@@ -48,8 +51,12 @@ public class User implements UserDetails {
     @Column(name = "isadmin")
     private Boolean isAdmin;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<Pin> pin;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private PasswdResetToken passwdResetToken;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<Pin> pin;
 
 
     public User(String email, String login, String password) {

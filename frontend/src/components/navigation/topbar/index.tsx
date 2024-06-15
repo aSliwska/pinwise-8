@@ -1,15 +1,20 @@
 "use client";
 
 import { isMapSidemenuOpenAtom, userAtom } from "@/components/store";
-import { ArrowLeftOutlined, MenuOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, MenuOutlined, PoweroffOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import { useAtom } from "jotai";
 import { Amita } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-const amita = Amita({ weight: "400", subsets: ["latin"] });
+const amita = Amita({ 
+  weight: "400", 
+  subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: false,
+ });
 
 export default function TopBar() {
   const [user, setUser] = useAtom(userAtom);
@@ -20,23 +25,34 @@ export default function TopBar() {
     setIsMapSidemenuOpen(!isMapSidemenuOpen);
   };
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
-    <div className="flex w-screen h-12 px-5 justify-between items-center bg-[#2E2E2E] border-[#282828] border-b">
-      <div className="flex flex-grow basis-0">
+    <div className="flex w-screen h-12 pr-5 pl-2 justify-between items-center bg-[#2E2E2E] border-[#282828] border-b">
+      <div className="flex flex-grow basis-0 h-full justify-start items-center">
         {pathname.substring(0, 4) != "/map" ? (
-          <Link href="/map" className="flex flex-row justify-start gap-4">
+          <Link href="/map" className="flex flex-row gap-4 pl-3">
             <ArrowLeftOutlined style={{ color: "#d4d4d4", fontSize: 20 }} />
             <div className={"text-neutral-400 text-sm"}>Powrót do mapy</div>
           </Link>
         ) : (
-          <button
-            type="button"
-            onClick={toggleMapSidemenuOpen}
-            className="flex flex-row justify-start"
-          >
-            <MenuOutlined style={{ color: "#d4d4d4", fontSize: 20 }} />
-          </button>
+          <div className="flex flex-row h-full items-center">
+            <Button
+              type="text"
+              onClick={toggleMapSidemenuOpen}
+            >
+              <MenuOutlined style={{ color: "#d4d4d4", fontSize: 22 }} />
+            </Button>
+            <Button
+              type="text"
+              onClick={() => {
+                localStorage.removeItem("finishedTour");
+              }}
+              href="/map"
+            >
+              <QuestionCircleOutlined size={20} style={{ color: "#d4d4d4", fontSize: 22 }} />
+            </Button>
+          </div>
         )}
       </div>
 
@@ -71,8 +87,9 @@ export default function TopBar() {
                 setUser((user) => ({ ...user, isAuthenticated: false }));
                 localStorage.removeItem("token");
               }}
+              className="flex flex-row items-center"
             >
-              &#8617;
+              <PoweroffOutlined />
             </Button>
           </div>
         ) : (
