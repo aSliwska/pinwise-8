@@ -15,8 +15,15 @@ export default function LoginPage() {
   const onFinish = async (values: any) => {
     const { email, password } = values;
     const loginResponse = await login(email, password);
+
     if (loginResponse.success) {
-      setUser((user) => ({ ...user, isAuthenticated: true }));
+      setUser((user) => ({
+        ...user,
+        name: loginResponse.data.username,
+        email: loginResponse.data.sub,
+        isAuthenticated: true,
+      }));
+
       setErrorMessage(null);
       router.push("/map");
     } else {

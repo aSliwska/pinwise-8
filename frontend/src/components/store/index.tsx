@@ -1,11 +1,24 @@
 "use client";
 
 import { Provider, atom } from "jotai";
+import { jwtDecode } from "jwt-decode";
+
+interface DecodedToken {
+  username: string;
+  sub: string;
+}
+
+const token = localStorage.getItem("token");
+
+let decodedToken: DecodedToken | null = null;
+if (token) {
+  decodedToken = jwtDecode<DecodedToken>(token);
+}
 
 export const userAtom = atom({
-  isAuthenticated: localStorage.getItem("token") ? true : false,
-  email: "test@test.com",
-  name: "TestUser",
+  isAuthenticated: token ? true : false,
+  email: decodedToken ? decodedToken.sub : "",
+  name: decodedToken ? decodedToken.username : "",
 }); // todo: user should probably be saved in localStorage... unless we fetch them on each refresh
 
 export const isMapSidemenuOpenAtom = atom(false);
