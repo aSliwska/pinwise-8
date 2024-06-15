@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PinRepository extends JpaRepository<Pin,Long> {
-    @Modifying
-    @Query("DELETE FROM pin p WHERE p.id = :id AND p.user = :user")
-    void deleteByIdAndUserId(@Param("id") Long id, @Param("user") User user);
+    void deleteByIdAndUserId(Long userId, Long id);
 
 }

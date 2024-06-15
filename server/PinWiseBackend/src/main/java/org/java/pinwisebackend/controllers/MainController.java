@@ -58,9 +58,24 @@ public class MainController {
     }
 
     @PutMapping("/users/{id}")
-    ResponseEntity<User> updateUser(@PathVariable long id, @RequestBody User user){
+        ResponseEntity<User> updateUser(@PathVariable long id, @RequestBody Map<String,Object> data){
         //TODO
-        return null;
+        User foundUser = repository.findUserById(id);
+        if(foundUser == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        //foundUser.setUsername((String)(data.get("username")));
+        foundUser.setEmail((String)(data.get("email")));
+        foundUser.setGender((String)(data.get("gender")));
+        foundUser.setAge((Integer)(data.get("age")));
+        foundUser.setActive((Boolean) (data.get("active")));
+        foundUser.setEducation((String)(data.get("education")));
+        foundUser.setIsAdmin((Boolean)(data.get("isAdmin")));
+
+
+        repository.save(foundUser);
+        return new ResponseEntity<>(foundUser,HttpStatus.OK);
     }
 
     @Transactional
@@ -139,7 +154,7 @@ public class MainController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        pinRepository.deleteByIdAndUserId(id,user);
+        pinRepository.deleteByIdAndUserId(user.getId(),id);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
