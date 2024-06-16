@@ -153,6 +153,7 @@ public class MainController {
 
         foundPin.setCoordinateX(((Number) (obj.get("x_coord"))).doubleValue());
         foundPin.setCoordinateY(((Number) (obj.get("y_coord"))).doubleValue());
+        foundPin.setAdres((String) obj.get("adres"));
         pinRepository.save(foundPin);
 
         return new ResponseEntity<>(pinRepository.findById(((Number)(obj.get("id"))).longValue()).get(),HttpStatus.OK);

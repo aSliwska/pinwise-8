@@ -24,15 +24,15 @@ public class HeatMapController {
     private ServiceRepository serviceRepository;
 
     @GetMapping("/getHeatMap")
-    ResponseEntity<List<Pin>> getHeatMap(@RequestBody Map<String, Object> obj){
+    ResponseEntity<List<Pin>> getHeatMap(@RequestParam("serwis_id") Long serwisId, @RequestParam("type_id") Long typeId, @RequestParam("company_name") String companyName){
         List<Pin> response = pinRepository.findAll().stream()
-                .filter(pin -> pin.getService().getId().compareTo(((Number)(obj.get("serwis_id"))).longValue()) == 0)
-                .filter(pin -> pin.getType().getId().compareTo(((Number)(obj.get("type_id"))).longValue()) == 0)
+                .filter(pin -> pin.getService().getId().compareTo(serwisId) == 0)
+                .filter(pin -> pin.getType().getId().compareTo(typeId) == 0)
                 .filter(pin -> {
-                    if(obj.get("company_name") == null){
-                        return obj.get("company_name") == pin.getCompanyName();
+                    if(companyName == null){
+                        return companyName == pin.getCompanyName();
                     }
-                    return pin.getCompanyName().compareTo((String) (obj.get("company_name"))) == 0;
+                    return pin.getCompanyName().compareTo(companyName) == 0;
                 }).toList();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
