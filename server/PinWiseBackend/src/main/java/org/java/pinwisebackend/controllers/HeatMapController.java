@@ -32,7 +32,7 @@ public class HeatMapController {
                     if(companyName == null){
                         return companyName == pin.getCompanyName();
                     }
-                    return pin.getCompanyName().compareTo(companyName) == 0;
+                    return typeId.equals(2L) || pin.getCompanyName().compareTo(companyName) == 0;
                 }).toList();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
