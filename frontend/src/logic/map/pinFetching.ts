@@ -1,4 +1,5 @@
-import React, { Dispatch, RefObject, SetStateAction, useRef } from "react";
+import { Dispatch, SetStateAction } from "react";
+import { getIconFileList } from "./iconReader";
 
 
 export async function fetchAllServiceTypes(setServices : Dispatch<SetStateAction<{
@@ -12,102 +13,67 @@ export async function fetchAllServiceTypes(setServices : Dispatch<SetStateAction
     logo: string,
   }
 }[]>>) {
-  // try {
-  //   const services: {
-      // type: string,
-      // companyName: string | undefined,
-      // service : {
-      //   id: number,
-      //   tagKey: string,
-      //   tagValue: string,
-      //   name: string,
-      //   logo: string,
-  // }
-  //   }[] = [];
+  try {
+    const services: {
+      type: string,
+      companyName: string | undefined,
+      service : {
+        id: number,
+        tagKey: string,
+        tagValue: string,
+        name: string,
+        logo: string,
+      }
+    }[] = [];
 
-  //     const response = await fetch(
-  //       `${process.env.NEXT_PUBLIC_API_URL}/map/services`,
-  //       {
-  //         method: "GET",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
+    const iconFiles = await getIconFileList();
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_UNAUTHORIZED_URL}/services`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   
-  //     if (response.ok) {
-  //       const { data } = await response.json(); 
-  //       data.forEach((element:{
-  // type: string,
-  // companyName: string | undefined,
-  // service : {
-  //   id: number,
-  //   tagKey: string,
-  //   tagValue: string,
-  //   name: string,
-  //   logo: string,
-  // }
-  //       }) => {
-  //         services.push({
-  // type: "service",
-  // companyName: undefined,
-  // service : {
-  //   id: element.id,
-  //   tagKey: element.tagKey,
-  //   tagValue: element.tagValue,
-  //   name: element.name,
-      // logo: "/service_icons/" + element.tagKey + "/" + element.tagValue ".svg",
-  // }
-  //         });
-  //       });
-  //       setServices(services);
+    if (response.ok) {
+      const data = await response.json(); 
+      
+      data.forEach((element:{
+        id: number,
+        name: string,
+        tagKey: string,
+        tagValue: string,
+      }) => {
+        services.push({
+          type: "service",
+          companyName: undefined,
+          service : {
+            id: element.id,
+            tagKey: element.tagKey,
+            tagValue: element.tagValue,
+            name: element.name,
+            logo: (iconFiles.has(element.tagKey + "/" + element.tagValue)) ? 
+            "/service_icons/" + element.tagKey + "/" + element.tagValue + ".svg" : 
+            "/service_icons/default.svg",
+          }
+        });
+      });
 
-  //       return { success: true, message: "Data fetched successfully" };
-  //     } 
-  //     else {
-  //       const errorMessage = await response.text(); 
-  //       return { success: false, message: errorMessage };
-  //     }
-  //   } catch (error) {
-  //     return { success: false, message: "An unexpected error occurred" };
-  //   }
-
-  // todo: set list of services fetched from db
-
-  setServices([{
-    type: "service",
-    companyName: undefined,
-    service : {
-      id: 0,
-      tagKey: "shop",
-      tagValue: "supermarket",
-      name: "Supermarket",
-      logo: "/service_icons/shop/supermarket.svg",
+      setServices(services);
+    } 
+    else {
+      const errorMessage = await response.text(); 
+      console.log(errorMessage);
     }
-  }, {
-    type: "service",
-    companyName: undefined,
-    service : {
-      id: 1,
-      tagKey: "amenity",
-      tagValue: "community_centre",
-      name: "Ośrodek kultury",
-      logo: "/service_icons/amenity/community_centre.svg",
-    }
-  }, {
-    type: "service",
-    companyName: undefined,
-    service : {
-      id: 2,
-      tagKey: "leisure",
-      tagValue: "sports_centre",
-      name: "Centrum sportowe",
-      logo: "/service_icons/leisure/sports_centre.svg",
-    }
-  }].sort((a, b) => a.service.name.localeCompare(b.service.name)));
+  } catch (error) {
+    console.log("An unexpected error occurred");
+  }
 }
 
-export async function fetchAllUserPins(email: string, setUserPins : Dispatch<SetStateAction<{
+export async function fetchAllUserPins(email: string, token: string | null, setUserPins : Dispatch<SetStateAction<{
   id: number,
   lon: number,
   lat: number,
@@ -125,49 +91,80 @@ export async function fetchAllUserPins(email: string, setUserPins : Dispatch<Set
   selected: boolean,
   inDeleteMode: boolean,
 }[]>>) {
+  try {
+    const iconFiles = await getIconFileList();
 
-  // todo: set list of pins fetched from db
+    const pins: {
+      id: number,
+      lon: number,
+      lat: number,
+      type: string,
+      companyName: string | undefined,
+      lastModificationDate: Date,
+      service: {
+        id: number,
+        tagKey: string,
+        tagValue: string,
+        name: string,
+        logo: string,
+      },
+      draggable: boolean,
+      selected: boolean,
+      inDeleteMode: boolean,
+    }[] = [];
 
-  setUserPins([{
-    id: 0,
-    lon: 19.93686,
-    lat: 50.06194,
-    type: "company",
-    companyName: "Firma 0",
-    lastModificationDate: new Date("2024-05-01"),
-    service: {
-      id: 5,
-      tagKey: "shop",
-      tagValue: "supermarket",
-      name: "Supermarket",
-      logo: "/service_icons/shop/supermarket.svg",
-    },
-    draggable: false,
-    selected: false,
-    inDeleteMode: false,
-  }, {
-    id: 1,
-    lon: 19.93799,
-    lat: 50.06147,
-    type: "company",
-    companyName: "Firma 1",
-    lastModificationDate: new Date("2024-01-01"),
-    service: {
-      id: 8,
-      tagKey: "shop",
-      tagValue: "bakery",
-      name: "Piekarnia",
-      logo: "/service_icons/shop/bakery.svg",
-    },
-    draggable: false,
-    selected: false,
-    inDeleteMode: false,
-  }]);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL}/userPins`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ email: email }),
+      }
+    );
+  
+    if (response.ok) {
+      const data = await response.json();
+      
+      data.forEach((element: any) => {
+        pins.push({
+          id: element.id,
+          lon: element.coordinateX,
+          lat: element.coordinateY,
+          type: (element.type.id == 2) ? "service" : "company",
+          companyName: element.companyName,
+          lastModificationDate: new Date(element.modificationDate),
+          service: {
+            id: element.service.id,
+            tagKey: element.service.tagKey,
+            tagValue: element.service.tagValue,
+            name: element.service.name,
+            logo: (iconFiles.has(element.service.tagKey + "/" + element.service.tagValue)) ? 
+            "/service_icons/" + element.service.tagKey + "/" + element.service.tagValue + ".svg" : 
+            "/service_icons/default.svg",
+          },
+          draggable: false,
+          selected: false,
+          inDeleteMode: false,
+        });
+      });
 
+      setUserPins(pins);
+    } 
+    else {
+      const errorMessage = await response.text(); 
+      console.log(errorMessage);
+    }
+  } catch (error) {
+    console.log("An unexpected error occurred");
+  }
 }
 
 export async function fetchMatchingUserPins(
   email: string,
+  token: string | null,
   searchedCompany: {
     type: string;
     companyName: string | undefined;
@@ -197,28 +194,80 @@ export async function fetchMatchingUserPins(
     selected: boolean,
     inDeleteMode: boolean,
 }[]>>) {
+  try {
+    const iconFiles = await getIconFileList();
 
-  // todo: set filtered list of pins fetched from db based on searchedCompany
+    const pins: {
+      id: number,
+      lon: number,
+      lat: number,
+      type: string,
+      companyName: string | undefined,
+      lastModificationDate: Date,
+      service: {
+        id: number,
+        tagKey: string,
+        tagValue: string,
+        name: string,
+        logo: string,
+      },
+      draggable: boolean,
+      selected: boolean,
+      inDeleteMode: boolean,
+    }[] = [];
 
-  setUserPins([{
-    id: 0,
-    lon: 19.93686,
-    lat: 50.06194,
-    type: "company",
-    companyName: "Firma 0",
-    lastModificationDate: new Date("2024-05-01"),
-    service: {
-      id: 5,
-      tagKey: "shop",
-      tagValue: "supermarket",
-      name: "Supermarket",
-      logo: "/service_icons/shop/supermarket.svg",
-    },
-    draggable: false,
-    selected: false,
-    inDeleteMode: false,
-  }]);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL}/matchUserPins`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ 
+          email: email,
+          serwis_id: searchedCompany.service.id,
+          type_id: (searchedCompany.type == "service") ? 2 : 1,
+          company_name: searchedCompany.companyName,
+        }),
+      }
+    );
+  
+    if (response.ok) {
+      const data = await response.json();
+      
+      data.forEach((element: any) => {
+        pins.push({
+          id: element.id,
+          lon: element.coordinateX,
+          lat: element.coordinateY,
+          type: (element.type.id == 2) ? "service" : "company",
+          companyName: element.companyName,
+          lastModificationDate: new Date(element.modificationDate),
+          service: {
+            id: element.service.id,
+            tagKey: element.service.tagKey,
+            tagValue: element.service.tagValue,
+            name: element.service.name,
+            logo: (iconFiles.has(element.service.tagKey + "/" + element.service.tagValue)) ? 
+            "/service_icons/" + element.service.tagKey + "/" + element.service.tagValue + ".svg" : 
+            "/service_icons/default.svg",
+          },
+          draggable: false,
+          selected: false,
+          inDeleteMode: false,
+        });
+      });
 
+      setUserPins(pins);
+    } 
+    else {
+      const errorMessage = await response.text(); 
+      console.log(errorMessage);
+    }
+  } catch (error) {
+    console.log("An unexpected error occurred");
+  }
 }
 
 export async function fetchHeatmapData(company: {
@@ -237,33 +286,75 @@ export async function fetchHeatmapData(company: {
     lon: number,
     lastModificationDate: Date,
 }[]>>) {  
+  try {
+    const heatmapData: {
+      lon: number,
+      lat: number,
+      lastModificationDate: Date,
+    }[] = [];
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_UNAUTHORIZED_URL}/getHeatMap`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          serwis_id: company.service.id,
+          type_id: (company.type == "service") ? 2 : 1,
+          company_name: company.companyName,
+        }),
+      }
+    );
+  
+    if (response.ok) {
+      const data = await response.json();
+      console.log(JSON.stringify(data, null, 2));
+      data.forEach((element: any) => {
+        heatmapData.push({
+          lon: element.coordinateX,
+          lat: element.coordinateY,
+          lastModificationDate: new Date(element.modificationDate),
+        });
+      });
+
+      setHeatMapData(heatmapData);
+    } 
+    else {
+      const errorMessage = await response.text(); 
+      console.log(errorMessage);
+    }
+  } catch (error) {
+    console.log(error);
+  }
   // todo: fetch heatmap data
 
-  setHeatMapData([
-    {
-      lon: 19.93586,
-      lat: 50.06184,
-      lastModificationDate: new Date("2024-05-01"),
-    },
-    {
-      lon: 19.93636,
-      lat: 50.06134,
-      lastModificationDate: new Date("2023-01-01"),
-    },
-    {
-      lon: 19.93646,
-      lat: 50.06184,
-      lastModificationDate: new Date("2024-01-01"),
-    },
-    {
-      lon: 19.93696,
-      lat: 50.06294,
-      lastModificationDate: new Date("2022-01-01"),
-    },
-    {
-      lon: 19.93486,
-      lat: 50.06184,
-      lastModificationDate: new Date("2024-06-01"),
-    },
-  ]);
+  // setHeatMapData([
+  //   {
+  //     lon: 19.93586,
+  //     lat: 50.06184,
+  //     lastModificationDate: new Date("2024-05-01"),
+  //   },
+  //   {
+  //     lon: 19.93636,
+  //     lat: 50.06134,
+  //     lastModificationDate: new Date("2023-01-01"),
+  //   },
+  //   {
+  //     lon: 19.93646,
+  //     lat: 50.06184,
+  //     lastModificationDate: new Date("2024-01-01"),
+  //   },
+  //   {
+  //     lon: 19.93696,
+  //     lat: 50.06294,
+  //     lastModificationDate: new Date("2022-01-01"),
+  //   },
+  //   {
+  //     lon: 19.93486,
+  //     lat: 50.06184,
+  //     lastModificationDate: new Date("2024-06-01"),
+  //   },
+  // ]);
 }

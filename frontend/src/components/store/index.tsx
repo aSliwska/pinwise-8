@@ -19,7 +19,7 @@ export const userAtom = atom({
   isAuthenticated: token ? true : false,
   email: decodedToken ? decodedToken.sub : "",
   name: decodedToken ? decodedToken.username : "",
-}); // todo: user should probably be saved in localStorage... unless we fetch them on each refresh
+});
 
 export const isMapSidemenuOpenAtom = atom(false);
 export const isServicesSearchOpenAtom = atom(false);

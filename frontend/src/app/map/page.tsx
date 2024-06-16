@@ -4,8 +4,8 @@ import { Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon, LeafletEvent } from 'leaflet';
 import PinPopupContent from '@/components/map/pin/userPin';
-import { Dispatch, RefObject, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { fetchAllUserPins, fetchMatchingUserPins } from '@/logic/map/pinFetching';
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import { fetchAllUserPins } from '@/logic/map/pinFetching';
 import { useAtomValue } from 'jotai';
 import { showUserPinsOnMapAtom, userAtom } from '@/components/store';
 
@@ -34,7 +34,7 @@ export default function StartMap() {
   }[]>([]);
 
   useEffect(() => {
-    fetchAllUserPins(user.email, setUserPins);
+    fetchAllUserPins(user.email, localStorage.getItem("token"), setUserPins);
   }, []);
 
   return (

@@ -3,11 +3,8 @@
 import { MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import SideMenu from '@/components/navigation/sidemenu';
-import { useEffect, useState } from 'react';
-import { useAtomValue } from 'jotai';
-import { userAtom } from '@/components/store';
+import { useState } from 'react';
 import SiteTour from '@/components/map/siteTour';
-import { usePathname } from 'next/navigation';
 
 export const mapBounds = {
   north: 50.1274,

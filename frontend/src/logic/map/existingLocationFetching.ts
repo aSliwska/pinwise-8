@@ -42,6 +42,7 @@ export async function handleCompanySearch(
     "https://overpass-api.de/api/interpreter",
     {
       method: "POST",
+      cache: "force-cache",
       body: "data="+ encodeURIComponent(`
         [out:csv(name, ${possibleKeys.join(', ')}; false)]
         [timeout:50]
@@ -151,6 +152,7 @@ export async function fetchExistingLocations(
       "https://overpass-api.de/api/interpreter",
       {
         method: "POST",
+        cache: "force-cache",
         body: "data="+ encodeURIComponent(`
           [bbox:${mapBounds.south}, ${mapBounds.west}, ${mapBounds.north}, ${mapBounds.east}]
           [out:json][timeout:50];
@@ -262,5 +264,27 @@ export async function reverseGeocode(lat: number, lon: number, setAddress: Dispa
   }
   catch {
     setAddress("lat: " + lat + ", lon: " + lon);
+  }  
+}
+
+export async function getReverseGeocoding(lat: number, lon: number): Promise<string> {
+  try {
+    const result = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=geojson&lat=${lat}&lon=${lon}&zoom=18&layer=address&addressdetails=1`,
+      { 
+        method: "GET",
+        cache: "force-cache"
+      }
+    ).then((data) => data.json());
+
+    if (result.features[0].properties.address.road !== undefined && result.features[0].properties.address.house_number !== undefined) {
+      return "ul. " + result.features[0].properties.address.road + " " + result.features[0].properties.address.house_number;
+    }
+    else {
+      return "lat: " + lat + ", lon: " + lon;
+    }
+  }
+  catch {
+    return "lat: " + lat + ", lon: " + lon;
   }  
 }

@@ -53,7 +53,7 @@ export default function Heatmap() {
   }[]>([]);
   useEffect(() => {
     if (searchedCompany !== null) {
-      fetchMatchingUserPins(user.email, searchedCompany, setUserPins);
+      fetchMatchingUserPins(user.email, localStorage.getItem("token"), searchedCompany, setUserPins);
     }
   }, [searchedCompany]);
 

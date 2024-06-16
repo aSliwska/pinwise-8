@@ -8,8 +8,8 @@ import { deletePin, postNewPin, postNewPinCoordinates } from '@/logic/map/pinMod
 import { Icon, LeafletEvent } from 'leaflet';
 import { Marker, Popup } from 'react-leaflet';
 import React from 'react';
-import { useAtom, useSetAtom } from 'jotai';
-import { showUserPinsOnMapAtom } from '@/components/store';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { showUserPinsOnMapAtom, userAtom } from '@/components/store';
 
 
 export default function NewPin(props: {
@@ -58,6 +58,7 @@ export default function NewPin(props: {
       add: (e: LeafletEvent) => e.target.openPopup(),
     };
   }, []);
+  const { email } = useAtomValue(userAtom);
 
   return (
     <Marker
@@ -77,9 +78,11 @@ export default function NewPin(props: {
           <div className="flex flex-row justify-center">
             <Button type="primary" onClick={() => {
               async function createNewPin() {
-                const newPin = await postNewPin(props.lat, props.lon, props.company);
-                props.addNewPin(newPin);
-                setShowUserPins(true);
+                const newPin = await postNewPin(email, localStorage.getItem("token"), props.lat, props.lon, props.company);
+                if (newPin != null) {
+                  props.addNewPin(newPin);
+                  setShowUserPins(true);
+                }
               };
 
               createNewPin();
