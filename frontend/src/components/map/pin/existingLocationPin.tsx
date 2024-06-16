@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useEffect, useState } from 'react';
 import { reverseGeocode } from '@/logic/map/existingLocationFetching';
 import ImageWithDefault from "@/components/imageWithDefault";

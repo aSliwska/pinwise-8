@@ -1,6 +1,5 @@
 import { DragOutlined, DeleteOutlined } from '@ant-design/icons';
-import Image from "next/image";
-import { Ref, RefObject, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import ImageWithDefault from '@/components/imageWithDefault';
 import { reverseGeocode } from '@/logic/map/existingLocationFetching';
@@ -17,6 +16,7 @@ export default function PinPopupContent(props: {
     type: string,
     companyName: string | undefined,
     lastModificationDate: Date,
+    address: string,
     service: {
       id: number,
       tagKey: string,
@@ -32,19 +32,14 @@ export default function PinPopupContent(props: {
   setCoordinates: (id: number, x: number, y: number, draggable: boolean) => void;
   setInDeleteMode: (id: number, inDeleteMode: boolean) => void;
   deletePin: (id: number) => void;
+  setAddress: (id: number, address: string) => void;
 }) {
   const [oldCoords, setOldCoords] = useState({
     lon: props.pin.lon, 
     lat: props.pin.lat,
   });
   
-  const [address, setAddress] = useState("");
-  const [runReverseGeocode, setRunReverseGeocode] = useState(false);
   const user = useAtomValue(userAtom);
-  
-  useEffect(() => {
-    reverseGeocode(props.pin.lat, props.pin.lon, setAddress);
-  }, [runReverseGeocode]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -56,10 +51,9 @@ export default function PinPopupContent(props: {
           <div className="flex flex-row gap-2 justify-between">
             <Button type="primary" onClick={() => {
                 async function temp() {
-                  const success = await postNewPinCoordinates(user.email, localStorage.getItem("token"), props.pin.id, props.pin.lon, props.pin.lat);
-                  if (success) {
-                    setRunReverseGeocode(!runReverseGeocode);
-                    props.toggleDraggable(props.pin.id);
+                  const address = await postNewPinCoordinates(user.email, localStorage.getItem("token"), props.pin.id, props.pin.lon, props.pin.lat);
+                  if (address !== null) {
+                    props.setAddress(props.pin.id, address);
                   }
                 }
                 
@@ -121,7 +115,7 @@ export default function PinPopupContent(props: {
             <div className="flex flex-row gap-6 justify-between items-end">
               <div className="flex flex-col text-neutral-600 text-xs">
                 {(props.pin.type == "company") && <span>{props.pin.service.name}</span>}
-                <span>{(address !== "") ? address : props.pin.lat + ", " + props.pin.lon}</span>
+                <span>{props.pin.address}</span>
                 <span>{props.pin.lastModificationDate.getDate().toString().padStart(2, '0') + "/" + (props.pin.lastModificationDate.getMonth()+1).toString().padStart(2, '0') + "/" + props.pin.lastModificationDate.getFullYear()}</span>
               </div>
               <div className='flex flex-row text-lg gap-3 text-neutral-600'>

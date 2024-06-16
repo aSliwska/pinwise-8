@@ -21,6 +21,7 @@ export default function StartMap() {
     type: string,
     companyName: string | undefined,
     lastModificationDate: Date,
+    address: string,
     service: {
       id: number,
       tagKey: string,
@@ -52,6 +53,7 @@ export function UserPinsLayer(props: {
     type: string,
     companyName: string | undefined,
     lastModificationDate: Date,
+    address: string,
     service: {
       id: number,
       tagKey: string,
@@ -70,6 +72,7 @@ export function UserPinsLayer(props: {
     type: string;
     companyName: string | undefined;
     lastModificationDate: Date;
+    address: string;
     service: {
         id: number;
         tagKey: string;
@@ -147,6 +150,20 @@ export function UserPinsLayer(props: {
     }));
   }, [props.pins]);
 
+  const setAddress = useCallback((id: number, address: string) => {
+    props.setPins(props.pins.map((pin) => {
+      if (pin.id === id) {
+        return {
+          ...pin,
+          address: address,
+          selected: false,
+          draggable: false,
+        };
+      }
+      return pin;
+    }));
+  }, [props.pins]);
+
   const setInDeleteMode = useCallback((id: number, inDeleteMode: boolean) => {
     props.setPins(props.pins.map((pin) => {
       if (pin.id === id) {
@@ -203,6 +220,7 @@ export function UserPinsLayer(props: {
               setCoordinates={setCoordinates}
               setInDeleteMode={setInDeleteMode}
               deletePin={deletePin}
+              setAddress={setAddress}
             />
           </Popup>
         </Marker>

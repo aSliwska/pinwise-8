@@ -1,14 +1,10 @@
-import { DragOutlined, DeleteOutlined } from '@ant-design/icons';
-import Image from "next/image";
-import { Dispatch, MutableRefObject, Ref, RefAttributes, RefObject, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import {  useCallback, useState } from 'react';
 import { Button } from 'antd';
-import ImageWithDefault from '@/components/imageWithDefault';
-import { reverseGeocode } from '@/logic/map/existingLocationFetching';
-import { deletePin, postNewPin, postNewPinCoordinates } from '@/logic/map/pinModification';
+import { postNewPin } from '@/logic/map/pinModification';
 import { Icon, LeafletEvent } from 'leaflet';
 import { Marker, Popup } from 'react-leaflet';
 import React from 'react';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { showUserPinsOnMapAtom, userAtom } from '@/components/store';
 
 
@@ -33,6 +29,7 @@ export default function NewPin(props: {
     type: string;
     companyName: string | undefined;
     lastModificationDate: Date;
+    address: string;
     service: {
         id: number;
         tagKey: string;

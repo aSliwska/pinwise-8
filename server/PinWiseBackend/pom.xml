@@ -71,11 +71,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-            <environmentVariables>
-                <JWT_SECRET>VerySecretIndeed</JWT_SECRET>
-            </environmentVariables>
-        </configuration>
 			</plugin>
 		</plugins>
 	</build>

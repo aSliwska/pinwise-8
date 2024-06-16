@@ -1,9 +1,9 @@
-import { getReverseGeocoding, reverseGeocode } from "./existingLocationFetching";
+import { getReverseGeocoding } from "./existingLocationFetching";
 
-export async function postNewPinCoordinates(email: string, token: string | null, id: number, lon: number, lat: number): Promise<boolean> {
-  //const address = await getReverseGeocoding(lat, lon);
-
+export async function postNewPinCoordinates(email: string, token: string | null, id: number, lon: number, lat: number): Promise<string | null> {
   try {
+    const address = await getReverseGeocoding(lat, lon);
+
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_APP_URL}/updatePin`,
       {
@@ -17,13 +17,13 @@ export async function postNewPinCoordinates(email: string, token: string | null,
           id: id,
           x_coord: lon,
           y_coord: lat,
-          //adres: address,
+          adres: address,
         }),
       }
     );
     
     if (response.ok) {
-      return true;
+      return address;
     } 
     else {
       const errorMessage = await response.text(); 
@@ -33,7 +33,7 @@ export async function postNewPinCoordinates(email: string, token: string | null,
     console.log("An unexpected error occurred");
   }
 
-  return false;
+  return null;
 }
   
 export async function deletePin(email: string, token: string | null, id: number) {
@@ -80,6 +80,7 @@ export async function postNewPin(email: string, token: string | null, lat: numbe
   type: string;
   companyName: string | undefined;
   lastModificationDate: Date;
+  address: string;
   service: {
       id: number;
       tagKey: string;
@@ -91,9 +92,9 @@ export async function postNewPin(email: string, token: string | null, lat: numbe
   selected: boolean;
   inDeleteMode: boolean;
 } | null> {
-  const address = await getReverseGeocoding(lat, lon);
-
   try {
+    const address = await getReverseGeocoding(lat, lon);
+    
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_APP_URL}/createPin`,
       {
@@ -124,6 +125,7 @@ export async function postNewPin(email: string, token: string | null, lat: numbe
         lat: lat,
         ...company,
         lastModificationDate: new Date(Date.now()),
+        address: address,
         draggable: false,
         selected: false,
         inDeleteMode: false,

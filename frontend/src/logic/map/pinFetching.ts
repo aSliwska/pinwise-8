@@ -40,7 +40,7 @@ export async function fetchAllServiceTypes(setServices : Dispatch<SetStateAction
   
     if (response.ok) {
       const data = await response.json(); 
-      
+
       data.forEach((element:{
         id: number,
         name: string,
@@ -80,6 +80,7 @@ export async function fetchAllUserPins(email: string, token: string | null, setU
   type: string,
   companyName: string | undefined,
   lastModificationDate: Date,
+  address: string,
   service: {
     id: number,
     tagKey: string,
@@ -101,6 +102,7 @@ export async function fetchAllUserPins(email: string, token: string | null, setU
       type: string,
       companyName: string | undefined,
       lastModificationDate: Date,
+      address: string,
       service: {
         id: number,
         tagKey: string,
@@ -136,6 +138,7 @@ export async function fetchAllUserPins(email: string, token: string | null, setU
           type: (element.type.id == 2) ? "service" : "company",
           companyName: element.companyName,
           lastModificationDate: new Date(element.modificationDate),
+          address: element.adres,
           service: {
             id: element.service.id,
             tagKey: element.service.tagKey,
@@ -183,6 +186,7 @@ export async function fetchMatchingUserPins(
     type: string,
     companyName: string | undefined,
     lastModificationDate: Date,
+    address: string,
     service: {
       id: number,
       tagKey: string,
@@ -204,6 +208,7 @@ export async function fetchMatchingUserPins(
       type: string,
       companyName: string | undefined,
       lastModificationDate: Date,
+      address: string,
       service: {
         id: number,
         tagKey: string,
@@ -244,6 +249,7 @@ export async function fetchMatchingUserPins(
           type: (element.type.id == 2) ? "service" : "company",
           companyName: element.companyName,
           lastModificationDate: new Date(element.modificationDate),
+          address: element.adres,
           service: {
             id: element.service.id,
             tagKey: element.service.tagKey,
