@@ -26,7 +26,7 @@ public class HeatMapController {
     @GetMapping("/getHeatMap")
     ResponseEntity<List<Pin>> getHeatMap(@RequestBody Map<String, Object> obj){
         List<Pin> response = pinRepository.findAll().stream()
-                .filter(pin -> pin.getSerwis().compareTo(((Number)(obj.get("serwis_id"))).longValue()) == 0)
+                .filter(pin -> pin.getService().getId().compareTo(((Number)(obj.get("serwis_id"))).longValue()) == 0)
                 .filter(pin -> pin.getType().getId().compareTo(((Number)(obj.get("type_id"))).longValue()) == 0)
                 .filter(pin -> {
                     if(obj.get("company_name") == null){
