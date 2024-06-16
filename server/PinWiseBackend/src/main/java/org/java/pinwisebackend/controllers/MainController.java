@@ -137,7 +137,7 @@ public class MainController {
                     if(obj.get("company_name") == null){
                         return obj.get("company_name") == pin.getCompanyName();
                     }
-                    return pin.getCompanyName().compareTo((String) (obj.get("company_name"))) == 0;
+                    return ((Integer)obj.get("type_id") == 2) ? true : pin.getCompanyName().compareTo((String) (obj.get("company_name"))) == 0;
                 }).toList();
         return new ResponseEntity<>(filtered,HttpStatus.OK);
     }
