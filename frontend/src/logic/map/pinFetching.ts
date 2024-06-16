@@ -233,7 +233,7 @@ export async function fetchMatchingUserPins(
           email: email,
           serwis_id: searchedCompany.service.id,
           type_id: (searchedCompany.type == "service") ? 2 : 1,
-          company_name: searchedCompany.companyName,
+          company_name: (searchedCompany.companyName !== undefined) ? searchedCompany.companyName : "",
         }),
       }
     );
@@ -300,23 +300,18 @@ export async function fetchHeatmapData(company: {
     }[] = [];
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_UNAUTHORIZED_URL}/getHeatMap`,
+      `${process.env.NEXT_PUBLIC_UNAUTHORIZED_URL}/getHeatMap?serwis_id=${company.service.id}&type_id=${(company.type == "service") ? 2 : 1}&company_name=${(company.companyName !== undefined) ? company.companyName : "null"}`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          serwis_id: company.service.id,
-          type_id: (company.type == "service") ? 2 : 1,
-          company_name: company.companyName,
-        }),
       }
     );
   
     if (response.ok) {
       const data = await response.json();
-      console.log(JSON.stringify(data, null, 2));
+      
       data.forEach((element: any) => {
         heatmapData.push({
           lon: element.coordinateX,

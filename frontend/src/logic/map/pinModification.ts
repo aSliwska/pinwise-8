@@ -94,7 +94,7 @@ export async function postNewPin(email: string, token: string | null, lat: numbe
 } | null> {
   try {
     const address = await getReverseGeocoding(lat, lon);
-    
+
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_APP_URL}/createPin`,
       {
@@ -107,7 +107,7 @@ export async function postNewPin(email: string, token: string | null, lat: numbe
           email: email, 
           id_serwis: company.service.id,
           type_id: (company.type == "service") ? 2 : 1,
-          company_name: company.companyName,
+          company_name: (company.companyName !== undefined) ? company.companyName : "",
           x_coord: lon,
           y_coord: lat,
           adres: address,
