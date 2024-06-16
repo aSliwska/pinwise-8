@@ -1,15 +1,11 @@
-import { DragOutlined, DeleteOutlined } from '@ant-design/icons';
-import Image from "next/image";
-import { Dispatch, MutableRefObject, Ref, RefAttributes, RefObject, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import {  useCallback, useState } from 'react';
 import { Button } from 'antd';
-import ImageWithDefault from '@/components/imageWithDefault';
-import { reverseGeocode } from '@/logic/map/existingLocationFetching';
-import { deletePin, postNewPin, postNewPinCoordinates } from '@/logic/map/pinModification';
+import { postNewPin } from '@/logic/map/pinModification';
 import { Icon, LeafletEvent } from 'leaflet';
 import { Marker, Popup } from 'react-leaflet';
 import React from 'react';
-import { useAtom, useSetAtom } from 'jotai';
-import { showUserPinsOnMapAtom } from '@/components/store';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { showUserPinsOnMapAtom, userAtom } from '@/components/store';
 
 
 export default function NewPin(props: {
@@ -33,6 +29,7 @@ export default function NewPin(props: {
     type: string;
     companyName: string | undefined;
     lastModificationDate: Date;
+    address: string;
     service: {
         id: number;
         tagKey: string;
@@ -58,6 +55,7 @@ export default function NewPin(props: {
       add: (e: LeafletEvent) => e.target.openPopup(),
     };
   }, []);
+  const { email } = useAtomValue(userAtom);
 
   return (
     <Marker
@@ -77,9 +75,11 @@ export default function NewPin(props: {
           <div className="flex flex-row justify-center">
             <Button type="primary" onClick={() => {
               async function createNewPin() {
-                const newPin = await postNewPin(props.lat, props.lon, props.company);
-                props.addNewPin(newPin);
-                setShowUserPins(true);
+                const newPin = await postNewPin(email, localStorage.getItem("token"), props.lat, props.lon, props.company);
+                if (newPin != null) {
+                  props.addNewPin(newPin);
+                  setShowUserPins(true);
+                }
               };
 
               createNewPin();

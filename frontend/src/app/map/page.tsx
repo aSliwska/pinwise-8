@@ -4,8 +4,8 @@ import { Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon, LeafletEvent } from 'leaflet';
 import PinPopupContent from '@/components/map/pin/userPin';
-import { Dispatch, RefObject, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { fetchAllUserPins, fetchMatchingUserPins } from '@/logic/map/pinFetching';
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import { fetchAllUserPins } from '@/logic/map/pinFetching';
 import { useAtomValue } from 'jotai';
 import { showUserPinsOnMapAtom, userAtom } from '@/components/store';
 
@@ -21,6 +21,7 @@ export default function StartMap() {
     type: string,
     companyName: string | undefined,
     lastModificationDate: Date,
+    address: string,
     service: {
       id: number,
       tagKey: string,
@@ -34,7 +35,7 @@ export default function StartMap() {
   }[]>([]);
 
   useEffect(() => {
-    fetchAllUserPins(user.email, setUserPins);
+    fetchAllUserPins(user.email, localStorage.getItem("token"), setUserPins);
   }, []);
 
   return (
@@ -52,6 +53,7 @@ export function UserPinsLayer(props: {
     type: string,
     companyName: string | undefined,
     lastModificationDate: Date,
+    address: string,
     service: {
       id: number,
       tagKey: string,
@@ -70,6 +72,7 @@ export function UserPinsLayer(props: {
     type: string;
     companyName: string | undefined;
     lastModificationDate: Date;
+    address: string;
     service: {
         id: number;
         tagKey: string;
@@ -147,6 +150,20 @@ export function UserPinsLayer(props: {
     }));
   }, [props.pins]);
 
+  const setAddress = useCallback((id: number, address: string) => {
+    props.setPins(props.pins.map((pin) => {
+      if (pin.id === id) {
+        return {
+          ...pin,
+          address: address,
+          selected: false,
+          draggable: false,
+        };
+      }
+      return pin;
+    }));
+  }, [props.pins]);
+
   const setInDeleteMode = useCallback((id: number, inDeleteMode: boolean) => {
     props.setPins(props.pins.map((pin) => {
       if (pin.id === id) {
@@ -203,6 +220,7 @@ export function UserPinsLayer(props: {
               setCoordinates={setCoordinates}
               setInDeleteMode={setInDeleteMode}
               deletePin={deletePin}
+              setAddress={setAddress}
             />
           </Popup>
         </Marker>

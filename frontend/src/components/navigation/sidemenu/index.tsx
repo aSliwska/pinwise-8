@@ -1,7 +1,6 @@
 import { Switch, Input, Tabs, Select, Form } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { useCallback, useDeferredValue, useEffect, useState } from 'react';
-import Image from "next/image";
+import { useCallback, useEffect, useState } from 'react';
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import { CloseOutlined } from '@ant-design/icons';
@@ -204,14 +203,14 @@ function SearchMenu() {
             <Tabs.TabPane 
               tab="Firmy" 
               key="1"
-              className='h-[66.3vh]'
+              className='h-[63vh]'
             >
               <CompaniesList companies={companies}/>
             </Tabs.TabPane>
             <Tabs.TabPane 
               tab="Usługi" 
               key="2"
-              className='h-[66.3vh]'
+              className='h-[63vh]'
             >
               <CompaniesList companies={ getFilteredServices(form.getFieldValue([['search']])) }/>
             </Tabs.TabPane>

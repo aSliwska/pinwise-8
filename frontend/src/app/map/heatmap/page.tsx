@@ -40,6 +40,7 @@ export default function Heatmap() {
     type: string,
     companyName: string | undefined,
     lastModificationDate: Date,
+    address: string,
     service: {
       id: number,
       tagKey: string,
@@ -53,7 +54,7 @@ export default function Heatmap() {
   }[]>([]);
   useEffect(() => {
     if (searchedCompany !== null) {
-      fetchMatchingUserPins(user.email, searchedCompany, setUserPins);
+      fetchMatchingUserPins(user.email, localStorage.getItem("token"), searchedCompany, setUserPins);
     }
   }, [searchedCompany]);
 
@@ -65,6 +66,7 @@ export default function Heatmap() {
     type: string,
     companyName: string | undefined,
     lastModificationDate: Date,
+    address: string,
     service: {
       id: number,
       tagKey: string,
@@ -100,6 +102,7 @@ export default function Heatmap() {
     type: string,
     companyName: string | undefined,
     lastModificationDate: Date,
+    address: string,
     service: {
       id: number,
       tagKey: string,

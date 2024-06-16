@@ -1,10 +1,11 @@
 import { DragOutlined, DeleteOutlined } from '@ant-design/icons';
-import Image from "next/image";
-import { Ref, RefObject, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import ImageWithDefault from '@/components/imageWithDefault';
 import { reverseGeocode } from '@/logic/map/existingLocationFetching';
 import { deletePin, postNewPinCoordinates } from '@/logic/map/pinModification';
+import { useAtomValue } from 'jotai';
+import { userAtom } from '@/components/store';
 
 
 export default function PinPopupContent(props: {
@@ -15,6 +16,7 @@ export default function PinPopupContent(props: {
     type: string,
     companyName: string | undefined,
     lastModificationDate: Date,
+    address: string,
     service: {
       id: number,
       tagKey: string,
@@ -30,18 +32,14 @@ export default function PinPopupContent(props: {
   setCoordinates: (id: number, x: number, y: number, draggable: boolean) => void;
   setInDeleteMode: (id: number, inDeleteMode: boolean) => void;
   deletePin: (id: number) => void;
+  setAddress: (id: number, address: string) => void;
 }) {
   const [oldCoords, setOldCoords] = useState({
     lon: props.pin.lon, 
     lat: props.pin.lat,
   });
   
-  const [address, setAddress] = useState("");
-  const [runReverseGeocode, setRunReverseGeocode] = useState(false);
-  
-  useEffect(() => {
-    reverseGeocode(props.pin.lat, props.pin.lon, setAddress);
-  }, [runReverseGeocode]);
+  const user = useAtomValue(userAtom);
 
   return (
     <div className="flex flex-col gap-2">
@@ -52,9 +50,14 @@ export default function PinPopupContent(props: {
           </span>
           <div className="flex flex-row gap-2 justify-between">
             <Button type="primary" onClick={() => {
-                postNewPinCoordinates(props.pin.id, props.pin.lon, props.pin.lat);
-                setRunReverseGeocode(!runReverseGeocode);
-                props.toggleDraggable(props.pin.id);
+                async function temp() {
+                  const address = await postNewPinCoordinates(user.email, localStorage.getItem("token"), props.pin.id, props.pin.lon, props.pin.lat);
+                  if (address !== null) {
+                    props.setAddress(props.pin.id, address);
+                  }
+                }
+                
+                temp();
               }}>
               Tak
             </Button>
@@ -73,8 +76,14 @@ export default function PinPopupContent(props: {
             </span>
             <div className="flex flex-row gap-2 justify-between items-center">
               <Button danger type="primary" onClick={() => {
-                  deletePin(props.pin.id);
-                  props.deletePin(props.pin.id);
+                  async function temp() {
+                    const success = await deletePin(user.email, localStorage.getItem("token"), props.pin.id);
+                    if (success) {
+                      props.deletePin(props.pin.id);
+                    }
+                  }
+
+                  temp();
                 }}>
                 Tak
               </Button>
@@ -99,14 +108,14 @@ export default function PinPopupContent(props: {
                 defaultSrc='/service_icons/default.svg'
               />
               <span className="flex text-neutral-600 text-lg">
-                {(props.pin.companyName !== undefined) ? props.pin.companyName : props.pin.service.name}
+                {(props.pin.type == "company") ? props.pin.companyName : props.pin.service.name}
               </span>
             </div>
             
             <div className="flex flex-row gap-6 justify-between items-end">
               <div className="flex flex-col text-neutral-600 text-xs">
-                {(props.pin.companyName !== undefined) && <span>{props.pin.service.name}</span>}
-                <span>{(address !== "") ? address : props.pin.lat + ", " + props.pin.lon}</span>
+                {(props.pin.type == "company") && <span>{props.pin.service.name}</span>}
+                <span>{props.pin.address}</span>
                 <span>{props.pin.lastModificationDate.getDate().toString().padStart(2, '0') + "/" + (props.pin.lastModificationDate.getMonth()+1).toString().padStart(2, '0') + "/" + props.pin.lastModificationDate.getFullYear()}</span>
               </div>
               <div className='flex flex-row text-lg gap-3 text-neutral-600'>
