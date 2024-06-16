@@ -13,6 +13,7 @@ import org.java.pinwisebackend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -78,6 +79,17 @@ public class MainController {
         return new ResponseEntity<>(foundUser,HttpStatus.OK);
     }
 
+    @PutMapping("/users/change_pass")
+    ResponseEntity<String> updatePassword(@RequestBody Map<String, Object> data){
+        User user = repository.findByEmail((String) data.get("email"));
+
+        user.setPassword(new BCryptPasswordEncoder().encode((String) data.get("password")));
+
+        repository.save(user);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @Transactional
     @DeleteMapping("/users/{id}")
     ResponseEntity<User> deleteUser(@PathVariable long id){
@@ -119,7 +131,7 @@ public class MainController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         List<Pin> filtered = allPins.stream()
-                .filter(pin -> pin.getSerwis().compareTo(((Number)(obj.get("serwis_id"))).longValue()) == 0)
+                .filter(pin -> pin.getService().getId().compareTo(((Number)(obj.get("serwis_id"))).longValue()) == 0)
                 .filter(pin -> pin.getType().getId().compareTo(((Number)(obj.get("type_id"))).longValue()) == 0)
                 .filter(pin -> {
                     if(obj.get("company_name") == null){
@@ -154,7 +166,7 @@ public class MainController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        pinRepository.deleteByIdAndUserId(user.getId(),id);
+        pinRepository.deleteByIdAndUserId(id,user.getId());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -175,7 +187,6 @@ public class MainController {
         newPin.setCoordinateY(((Number)(obj.get("y_coord"))).doubleValue());
         newPin.setCompanyName((String)obj.get("company_name"));
         newPin.setAdres((String) obj.get("adres"));
-        newPin.setSerwis(((Number)(obj.get("id_serwis"))).longValue());
         newPin.setModificationDate(LocalDateTime.now());
 
         pinRepository.save(newPin);

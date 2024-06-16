@@ -19,12 +19,12 @@ import java.util.List;
 @Table(name = "pin")
 public class Pin {
     @Id
-    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId
+    //@MapsId
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -41,8 +41,8 @@ public class Pin {
     @Column(name = "adres")
     private String adres;
 
-    @Column(name = "id_serwis")
-    private Long serwis;
+    //@Column(name = "id_serwis")
+    //private Long serwis;
 
     @Column(name = "modification_date")
     private LocalDateTime modificationDate;
@@ -51,7 +51,7 @@ public class Pin {
     private String companyName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId
+    //@MapsId
     @JoinColumn(name = "id_serwis", nullable = false)
     private Service service;
 
