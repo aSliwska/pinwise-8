@@ -6,6 +6,7 @@ export const userAtom = atom({
   isAuthenticated: true,
   id: 0,
   name: "TestUser",
+  email: "testemail@mail.com",
 })
 
 export const isMapSidemenuOpenAtom = atom(false)

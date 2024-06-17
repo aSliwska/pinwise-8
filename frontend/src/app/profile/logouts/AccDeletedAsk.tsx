@@ -1,9 +1,12 @@
 import react from "react";
 import { Button, Input } from "antd";
 import { useState } from "react";
+import { isMapSidemenuOpenAtom, userAtom } from "@/components/store";
 import { useRouter } from "next/navigation";
+import { useAtom } from "jotai";
 
 const AccDeletedAsk = () => {
+  const [user, setUser] = useAtom(userAtom);
   const router = useRouter();
   return (
     <div className="flex min-h-full justify-center color-bg-gradient-dark-gray w-5/6 min-w-[500px]">
@@ -19,6 +22,8 @@ const AccDeletedAsk = () => {
         color="red"
         block
         onClick={() => {
+          setUser((user) => ({ ...user, isAuthenticated: false }));
+          localStorage.removeItem("token");
           router.push('/profile/logouts?mode=AccDeletedPage');
         }}
       >

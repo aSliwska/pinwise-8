@@ -3,7 +3,10 @@ import { AccDeletedPage } from "@/app/profile/logouts/AccDeleted";
 import { AccDeletedAsk } from "@/app/profile/logouts/AccDeletedAsk";
 import { EmailChangeconfirmPage } from "@/app/profile/logouts/EmailChangeConfirm";
 import { useEffect, useState } from "react";
-import { redirect } from 'next/navigation'
+import { redirect } from 'next/navigation';
+import { isMapSidemenuOpenAtom, userAtom } from "@/components/store";
+import { useRouter } from "next/navigation";
+import { useAtom } from "jotai";
 
 export default function RegisterPage() {
   const [mode, setMode] = useState<string>("AccDeletedAsk");

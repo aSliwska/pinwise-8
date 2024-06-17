@@ -10,9 +10,36 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import PinCard from 'components/PinCard';
 
-function CreatePin() {
-  return(<PinCard title="My Custom Card" content="This is a reusable card component using Tailwind CSS and Ant Design." />);
-}
+import { fetchAllUserPins } from '../../../../logic/map/pinFetching';
+
+
+
+const handleDeletePin = () => {return Promise<void>;}
+
+
+
+// function CreatePin() {
+//   return(<PinCard logoUrl="" title="My Custom Card" type="bleep" address="bloop" date_added="bap!"/>);
+// }
+
+// interface CardProps {
+//   title: string;
+//   description: string;
+//   imageUrl: string;
+// }
+
+// const Card: React.FC<CardProps> = ({ title, description, imageUrl }) => {
+//   return (
+//     <div className="card">
+//       <img src={imageUrl} alt={title} className="card-img" />
+//       <div className="card-content">
+//         <h2 className="card-title">{title}</h2>
+//         <p className="card-description">{description}</p>
+//       </div>
+//     </div>
+//   );
+// };
+
 
 export default function ProfilePage() {
     return (
@@ -23,7 +50,7 @@ export default function ProfilePage() {
           <div className="mu-10 h-full flexitems-center justify-center">
           <div className="container mx-auto p-4 w-full">
         <div className="grid grid-cols-2 gap-4 w-full">
-            <div className="">
+            <div className="flex-initial">
                 <h2 className="text-xl mb-6">User</h2>
             <div className="h-full">
                 <ul className="space-y-0">
@@ -35,14 +62,15 @@ export default function ProfilePage() {
                 </div>
             </div>
 
-            <div className="">
+            <div className="flex-auto">
                 <h2 className="text-xl">Moje pineski</h2>
-                <ul className="space-y-2">
-                    <li className="block p-2">Item A</li>
-                    <li className="block p-2">Item B</li>
-                    <li className="block p-2">Item C</li>
-                    <li className="block p-2">Item D</li>
-                </ul>
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                <div style={{ height: '500px', overflowY: 'auto', width: '320px', padding: '10px', borderRadius: '5px', scrollbarWidth: 'none' }}>
+                  
+                  
+                  
+                </div>
+                </div>
             </div>
         </div>
     </div>
