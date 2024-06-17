@@ -21,19 +21,21 @@ const PersonalDataPanel = ({
 
   return (
     <div className="flex flex-col justify-center">
-      <div className=" flex mb-4">
-        <Button style={{ fontWeight: 700 }} onClick={handleGoBack}>
-          &larr; Go Back
+      <div className=" flex mb-6">
+        <Button ghost style={{ fontWeight: 700 }} onClick={handleGoBack}>
+          &larr; Wróć
         </Button>
       </div>
       <form>
         <div className="flex flex-col items-center justify-between gap-12 rounded-lg text-white">
-          <div className="text-5xl font-bold">Dane osobowe</div>
+          <div className="text-5xl font-bold text-center">Jeżeli chcesz, podaj<br/>swoje dane osobowe</div>
+
+          <span className="text-xl text-neutral-400 text-center">Dodaj swoje dane, aby inwestorzy mieli lepsze pojęcie<br/>o ich potencjalnych klientach.</span>
 
           <table className="text-xl w-full">
             <tbody>
               <tr className="table-row-gap">
-                <td>Płeć</td>
+                <td className="text-neutral-400">Płeć</td>
                 <td>
                   <Select
                     className="w-full"
@@ -47,7 +49,7 @@ const PersonalDataPanel = ({
                 </td>
               </tr>
               <tr className="table-row-gap">
-                <td>Wiek</td>
+                <td className="text-neutral-400">Wiek</td>
                 <td>
                   <Select
                     className="w-full"
@@ -64,7 +66,7 @@ const PersonalDataPanel = ({
                 </td>
               </tr>
               <tr>
-                <td>Edukacja</td>
+                <td className="text-neutral-400">Edukacja</td>
                 <td className="items-right">
                   <Select
                     className="w-full"
