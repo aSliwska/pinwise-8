@@ -3,15 +3,27 @@
 import { MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import SideMenu from '@/components/navigation/sidemenu';
+import { useState } from 'react';
+import SiteTour from '@/components/map/siteTour';
+
+export const mapBounds = {
+  north: 50.1274,
+  west: 19.7853,
+  south: 49.9702,
+  east: 20.2245
+}
 
 export default function MapPage({
   children
 }: {
   children: React.ReactNode
 }) {
+  const [showTour, setShowTour] = useState<boolean>(localStorage.getItem('finishedTour') == null);
+
   return (
     <>
       <SideMenu/>
+      {showTour && <SiteTour setShowTour={setShowTour}/>}
       <div className='h-full w-full'>
         <MapContainer 
           center={[50.06194, 19.93686]} 
@@ -20,7 +32,7 @@ export default function MapPage({
           zoomSnap={0.5} zoomDelta={1}
           scrollWheelZoom={true} wheelPxPerZoomLevel={120}
           zoomControl={false}
-          maxBounds={[[50.1274, 19.7853],[49.9702, 20.2245]]}
+          maxBounds={[[mapBounds.north, mapBounds.west],[mapBounds.south, mapBounds.east]]}
           maxBoundsViscosity={0.5}
         >
           <TileLayer
@@ -28,10 +40,10 @@ export default function MapPage({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <ZoomControl position="bottomright" />
+
           {children}
         </MapContainer>
       </div>
     </>
-    
   );
 }

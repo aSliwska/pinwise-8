@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { ConfigProvider } from "antd";
 import { NextFont } from "next/dist/compiled/@next/font";

@@ -2,125 +2,229 @@
 
 import { Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Icon } from 'leaflet';
-import PinPopupContent from '@/components/map/pin';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { Icon, LeafletEvent } from 'leaflet';
+import PinPopupContent from '@/components/map/pin/userPin';
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import { fetchAllUserPins } from '@/logic/map/pinFetching';
+import { useAtomValue } from 'jotai';
+import { showUserPinsOnMapAtom, userAtom } from '@/components/store';
 
-export default function MapPage() {
-  
 
-  const markerIcon = new Icon({iconUrl: 'marker.svg', iconSize: [24, 40]});
-  const markerSelectedIcon = new Icon({iconUrl: 'marker-selected.svg', iconSize: [24, 40]});
-  const [pins, setPins] = useState([{
-      id: 0,
-      x: 50.06194,
-      y: 19.93686,
-      name: "Firma 0",
-      serviceType: "Typ usługi 0",
-      address: "ul. Temp 8",
-      lastModificationDate: "21/03/2025",
-      logo: "/temp_rectangle.svg",
-      draggable: false,
-      markerRef: useRef<L.Marker>(null),
+export default function StartMap() {
+  const showUserPinsOnMap = useAtomValue(showUserPinsOnMapAtom);
+  const user = useAtomValue(userAtom);
+
+  const [userPins, setUserPins] = useState<{
+    id: number,
+    lon: number,
+    lat: number,
+    type: string,
+    companyName: string | undefined,
+    lastModificationDate: Date,
+    address: string,
+    service: {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
     },
-    {
-      id: 1,
-      x: 50.0619,
-      y: 19.9431,
-      name: "Firma 1",
-      serviceType: "Typ usługi 1",
-      address: "ul. Temp 10",
-      lastModificationDate: "22/03/2025",
-      logo: "/temp_rectangle.svg",
-      draggable: false,
-      markerRef: useRef<L.Marker>(null),
-    }
-  ]);
+    draggable: boolean,
+    selected: boolean,
+    inDeleteMode: boolean,
+  }[]>([]);
+
+  useEffect(() => {
+    fetchAllUserPins(user.email, localStorage.getItem("token"), setUserPins);
+  }, []);
+
+  return (
+    <UserPinsLayer show={showUserPinsOnMap} pins={userPins} setPins={setUserPins}/>
+  );
+}
+
+
+export function UserPinsLayer(props: {
+  show: boolean,
+  pins: {
+    id: number,
+    lon: number,
+    lat: number,
+    type: string,
+    companyName: string | undefined,
+    lastModificationDate: Date,
+    address: string,
+    service: {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+    draggable: boolean,
+    selected: boolean,
+    inDeleteMode: boolean,
+  }[],
+  setPins: Dispatch<SetStateAction<{
+    id: number;
+    lon: number;
+    lat: number;
+    type: string;
+    companyName: string | undefined;
+    lastModificationDate: Date;
+    address: string;
+    service: {
+        id: number;
+        tagKey: string;
+        tagValue: string;
+        name: string;
+        logo: string;
+    };
+    draggable: boolean;
+    selected: boolean;
+    inDeleteMode: boolean;
+  }[]>>,
+}) {
+  const [markerIcon, _] = useState(new Icon({
+    iconUrl: '/marker.svg', 
+    iconSize: [24, 40],
+    iconAnchor: [12, 40],
+    popupAnchor: [-1, -32],
+  }));
+  const [markerSelectedIcon, __] = useState(new Icon({
+    iconUrl: "/marker-selected.svg",
+    iconSize: [24, 40],
+    iconAnchor: [12, 40],
+    popupAnchor: [-1, -32],
+  }));
+
   const toggleDraggable = useCallback((id: number) => {
-    setPins(pins.map((pin) => {
+    props.setPins(props.pins.map((pin) => {
       if (pin.id === id) {
         return {
           ...pin,
+          selected: !pin.draggable,
           draggable: !pin.draggable,
         };
       }
       return pin;
     }));
-  }, [pins, setPins]);
-  const setCoordinates = useCallback((id: number, x: number, y: number, draggable: boolean) => {
-    setPins(pins.map((pin) => {
+  }, [props.pins]);
+
+  const setFocus = useCallback((id: number, selected: boolean) => {
+    props.setPins(props.pins.map((pin) => {
+      if (pin.id === id) {
+        if (!selected) {
+          return {
+            ...pin,
+            selected: selected,
+            inDeleteMode: false,
+          };
+        }
+        return {
+          ...pin,
+          selected: selected,
+        };
+      } else if (!pin.draggable) {
+        return {
+          ...pin,
+          selected: false,
+        };
+      }
+      return pin;
+    }));
+  }, [props.pins]);
+
+  const setCoordinates = useCallback((id: number, lon: number, lat: number, draggable: boolean) => {
+    props.setPins(props.pins.map((pin) => {
       if (pin.id === id) {
         return {
           ...pin,
-          x: x,
-          y: y,
+          lon: lon,
+          lat: lat,
+          selected: draggable,
           draggable: draggable,
         };
       }
       return pin;
     }));
-  }, [pins, setPins]);
+  }, [props.pins]);
 
-  const createEventHandlers = useMemo(
-    () => (pin: { markerRef: { current: any; }; id: number; }) => ({
-      dragend() {
-        let marker = pin.markerRef.current;
-        if (marker != null) {
-          let coords = marker.getLatLng();
-          setCoordinates(pin.id, coords.lat, coords.lng, true);
-        }
-      },
-    }),
-    [setCoordinates]
-  );
+  const setAddress = useCallback((id: number, address: string) => {
+    props.setPins(props.pins.map((pin) => {
+      if (pin.id === id) {
+        return {
+          ...pin,
+          address: address,
+          selected: false,
+          draggable: false,
+        };
+      }
+      return pin;
+    }));
+  }, [props.pins]);
+
+  const setInDeleteMode = useCallback((id: number, inDeleteMode: boolean) => {
+    props.setPins(props.pins.map((pin) => {
+      if (pin.id === id) {
+        return {
+          ...pin,
+          inDeleteMode: inDeleteMode,
+        };
+      }
+      return pin;
+    }));
+  }, [props.pins]);
+
+  const deletePin = useCallback((id: number) => {
+    props.setPins(props.pins.filter((pin) => pin.id !== id));
+  }, [props.pins]);
+  
+  const eventHandlersArray = useMemo(() => {
+    return props.pins.map((pin) => {
+      return {
+        dragend(e: LeafletEvent) {
+          const coords = e.target.getLatLng();
+          setCoordinates(pin.id, coords.lng, coords.lat, true);
+        },
+        popupopen() {
+          setFocus(pin.id, true);
+        },
+        popupclose() {
+          if (!pin.draggable) {
+            setFocus(pin.id, false);
+          }
+        },
+      };
+    });
+  }, [props.pins]);
 
   return (
     <>
-      {pins.map((pin) => (
+      {props.show && props.pins.map((pin, index) => (
         <Marker 
           key={pin.id}
-          position={[pin.x, pin.y]} 
-          icon={pin.draggable ? markerSelectedIcon : markerIcon} 
+          position={[pin.lat, pin.lon]} 
+          icon={pin.selected ? markerSelectedIcon : markerIcon} 
           draggable={pin.draggable} 
-          ref={pin.markerRef} 
-          eventHandlers={
-          //   useMemo(
-          //   () => ({
-          //     dragend() {
-          //       let marker = pin.markerRef.current;
-          //       if (marker != null) {
-          //         let coords = marker.getLatLng();
-        
-          //         setCoordinates(pin.id, coords.lat, coords.lng, true);
-          //       }
-          //     },
-          //   }), // todo: im going to cry
-          //   [pin, setCoordinates],
-          // )
-          createEventHandlers(pin)}
-          zIndexOffset={pin.draggable ? 9001 : 0}
+          eventHandlers={eventHandlersArray[index]}
+          zIndexOffset={pin.selected ? 9001 : 0}
         >
-          <Popup closeButton={false} offset={[0, -4]}>
+          <Popup 
+            closeButton={false} 
+            closeOnClick={true}
+          >
             <PinPopupContent 
               pin={pin} 
               toggleDraggable={toggleDraggable} 
               setCoordinates={setCoordinates}
+              setInDeleteMode={setInDeleteMode}
+              deletePin={deletePin}
+              setAddress={setAddress}
             />
           </Popup>
         </Marker>
       ))}
-
-      <Marker position={[50.1274, 19.7853]} icon={markerIcon}>
-        <Popup closeButton={false} offset={[0, -4]}>
-          topleft
-        </Popup>
-      </Marker>
-      <Marker position={[49.9702, 20.2245]} icon={markerIcon}>
-        <Popup closeButton={false} offset={[0, -4]}>
-          bottomright
-        </Popup>
-      </Marker>
     </>
-    
   );
 }

@@ -13,6 +13,7 @@
     "@ant-design/nextjs-registry": "^1.0.0",
     "@types/leaflet": "^1.9.12",
     "antd": "^5.16.5",
+    "fs": "0.0.1-security",
     "jotai": "^2.8.0",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
@@ -20,12 +21,12 @@
     "react": "^18",
     "react-dom": "^18",
     "react-leaflet": "^4.2.1",
-    "recoil": "^0.7.7"
+    "react-leaflet-heatmap-layer-v3": "3.0.3-beta-1"
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
     "eslint": "^8",
     "eslint-config-next": "14.2.2",
     "postcss": "^8",

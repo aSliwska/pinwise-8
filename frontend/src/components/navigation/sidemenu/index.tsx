@@ -1,39 +1,20 @@
-import { Switch, Input, Tabs, Select } from 'antd';
+import { Switch, Input, Tabs, Select, Form } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { useState } from 'react';
-import Image from "next/image";
+import { useCallback, useEffect, useState } from 'react';
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import { CloseOutlined } from '@ant-design/icons';
-import { useAtomValue } from 'jotai';
-import { isMapSidemenuOpenAtom, userAtom } from '@/components/store';
-
-export async function handleSearch(event: React.FormEvent) {
-  event.preventDefault();
-  // alert("Search");
-  // todo: implement search
-}
-
-export async function showUserPins() {
-  alert("show user pins");
-  // todo: show user pins 
-}
-
-export async function showExistingLocations() {
-  alert("show pins from google");
-  // todo: show pins from google
-}
-
-export async function showHeatmap() {
-  alert("show heatmap");
-  // todo: show heatmap
-}
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { showExistingLocationsOnMapAtom, showUserPinsOnMapAtom, isMapSidemenuOpenAtom, userAtom, showHeatmapAtom, timePeriodForPinDisplayAtom, isServicesSearchOpenAtom } from '@/components/store';
+import { handleCompanySearch } from '@/logic/map/existingLocationFetching';
+import { fetchAllServiceTypes } from '@/logic/map/pinFetching';
+import ImageWithDefault from '@/components/imageWithDefault';
 
 export default function SideMenu() {
   const pathname = usePathname();
   const isMapSidemenuOpen = useAtomValue(isMapSidemenuOpenAtom);
 
-  return ( // todo: logged out user appearance
+  return (
     <div className={(isMapSidemenuOpen? "" : "-translate-x-full") + " transition-transform duration-200 w-[400px] h-full pt-12 -translate-y-[48px] absolute z-[1] color-bg-gradient-dark-gray divide-y divide-neutral-600 overflow-hidden"}>
       {pathname == "/map" ? (<SearchMenu/>) : (<HeatmapMenu/>)}
     </div>
@@ -41,16 +22,22 @@ export default function SideMenu() {
 }
 
 function HeatmapMenu() {
-  const [service, setService] = useState({
-    id: 0,
-    name: "Firma 0",
-    logo: "/temp_rectangle.svg"
-  });
+  const [company, _] = useState<{
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+  }>(JSON.parse(localStorage.getItem('searchedCompany')!)); 
   const user = useAtomValue(userAtom);
-  const handleTimePeriodChange = (value: string) => {
-    alert("time period change");
-    // todo: fetch filtered data
-  };
+  const [showExistingLocationsOnMap, setShowExistingLocationsOnMap] = useAtom(showExistingLocationsOnMapAtom);
+  const [showHeatmap, setShowHeatmap] = useAtom(showHeatmapAtom);
+  const [showUserPinsOnMap, setShowUserPinsOnMap] = useAtom(showUserPinsOnMapAtom);
+  const setTimePeriodForPinDisplay = useSetAtom(timePeriodForPinDisplayAtom);
 
   return (
     <>
@@ -59,15 +46,28 @@ function HeatmapMenu() {
           Wyświetlasz:
         </span>
         <div className='flex flex-row p-3 gap-4 rounded-lg border border-neutral-600 items-center color-bg-gradient-gray-fade text-neutral-200 w-full'>
-          <Image
-            className="relative"
-            src={service.logo}
+          <ImageWithDefault
+            className="relative p-1"
+            style={{'filter': 'invert(85%) sepia(87%) saturate(35%) hue-rotate(166deg) brightness(112%) contrast(80%)'}}
+            src={company.service.logo}
             alt="company logo or service icon"
-            width={40}
-            height={40}
+            width={32}
+            height={32}
             priority
+            defaultSrc='/service_icons/default.svg'
           />
-          {service.name}
+          <div className='flex flex-col gap-[2px]'>
+            {(company.type == "company") ? (
+              <>
+                {company.companyName}
+                <span className='text-xs text-neutral-500'>
+                  {company.service.name}
+                </span>
+              </>
+            ) : (
+              <>{company.service.name}</>
+            )}
+          </div>
           
           <Link href='/map' className='flex ml-auto text-neutral-500 text-2xl'>
             <CloseOutlined/>
@@ -75,34 +75,40 @@ function HeatmapMenu() {
         </div>
         <div className='flex flex-row justify-between items-center mt-3'>
           <span className='text-neutral-200'>Wyświetl dane:</span>
-            <Select defaultValue='5' onChange={handleTimePeriodChange} 
+            <Select defaultValue={'-1'} onChange={(newVal) => setTimePeriodForPinDisplay(newVal)} 
               placement="bottomRight" popupMatchSelectWidth={false}
               options={[
-                { value: '0', label: 'Z tego tygodnia' },
-                { value: '1', label: 'Z tego miesiąca' },
-                { value: '2', label: 'Z ostatnich 3 miesięcy' },
-                { value: '3', label: 'Z ostatnich 6 miesięcy' },
-                { value: '4', label: 'Z tego roku' },
-                { value: '5', label: 'Wszystkie' }
+                { value: '604800000', label: 'Z tego tygodnia' },
+                { value: '2628002880', label: 'Z tego miesiąca' },
+                { value: '7884008640', label: 'Z ostatnich 3 miesięcy' },
+                { value: '15768000000', label: 'Z ostatnich 6 miesięcy' },
+                { value: '31536000000', label: 'Z ostatnich 12 miesięcy' },
+                { value: '-1', label: 'Wszystkie' }
             ]}/>
         </div>
       </div>
 
       <div className='flex flex-col p-6 gap-6'>
         <div className="flex flex-row gap-3 items-center">
-          <Switch onChange={showExistingLocations}/>
+          <Switch checked={showExistingLocationsOnMap} onChange={() => {
+              setShowExistingLocationsOnMap(!showExistingLocationsOnMap);
+            }}/>
           <div className='text-neutral-200'>Pokaż istniejące lokacje</div>
         </div>
 
         <div className="flex flex-row gap-3 items-center">
-          <Switch defaultChecked onChange={showHeatmap}/>
+          <Switch checked={showHeatmap} onChange={() => {
+            setShowHeatmap(!showHeatmap);
+          }}/>
           <div className='text-neutral-200'>Pokaż mapę cieplną zainteresowania</div>
         </div>
 
         {user.isAuthenticated ? (
           <>
             <div className="flex flex-row gap-3 items-center">
-              <Switch onChange={showUserPins}/>
+              <Switch checked={showUserPinsOnMap} onChange={() => {
+                setShowUserPinsOnMap(!showUserPinsOnMap);
+              }}/>
               <div className='text-neutral-200'>Pokaż moje pineski</div>
             </div>
             <span className='text-neutral-400'>Kliknij na mapę, aby dodać nową pineskę.</span>
@@ -118,138 +124,51 @@ function HeatmapMenu() {
 }
 
 function SearchMenu() {
-  const [companies, setCompanies] = useState([
-    {
-        id: 0,
-        name: "Firma 0",
-        logo: "/temp_rectangle.svg"
+  const [services, setServices] = useState<{
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
     },
-    {
-        id: 1,
-        name: "Firma 1",
-        logo: "/temp_rectangle.svg"
+  }[]>([]);
+  const [companies, setCompanies] = useState<{
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
     },
-    {
-        id: 2,
-        name: "Firma 2",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 3,
-        name: "Firma 3",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 4,
-        name: "Firma 4",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 5,
-        name: "Firma 5",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 6,
-        name: "Firma 6",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 7,
-        name: "Firma 7",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 8,
-        name: "Firma 8",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 9,
-        name: "Firma 9",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 10,
-        name: "Firma 10",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 11,
-        name: "Firma 11",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 12,
-        name: "Firma 12",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 13,
-        name: "Firma 13",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 14,
-        name: "Firma 14",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-      id: 15,
-      name: "Firma 15",
-      logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 16,
-        name: "Firma 16",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 17,
-        name: "Firma 17",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 18,
-        name: "Firma 18",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 19,
-        name: "Firma 19",
-        logo: "/temp_rectangle.svg"
-    },
-    {
-        id: 20,
-        name: "Firma 20",
-        logo: "/temp_rectangle.svg"
-    },
-  ]);
-  const [services, setServices] = useState([
-    {
-      id: 21,
-      name: "Usługa 0",
-      logo: "/temp_rectangle.svg"
-    },
-    {
-      id: 22,
-      name: "Usługa 1",
-      logo: "/temp_rectangle.svg"
-    },
-    {
-      id: 23,
-      name: "Usługa 2",
-      logo: "/temp_rectangle.svg"
-    },
-  ]); // TODO: fetch companies and services
+  }[]>([]);
   const user = useAtomValue(userAtom);
+  const [isServicesSearchOpen, setIsServicesSearchOpen] = useAtom(isServicesSearchOpenAtom);
+  const [showUserPinsOnMap, setShowUserPinsOnMap] = useAtom(showUserPinsOnMapAtom);
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    fetchAllServiceTypes(setServices);
+  }, [form]);
+
+  const getFilteredServices = useCallback((substr: string) => {
+    return (services.length < 1 || substr == null) ? 
+      services :
+      services.filter((s) => s.service.name.toLowerCase().includes((substr + "").trim().toLowerCase()))
+  }, [services]);
 
   return (
     <>
       <div className="flex flex-row p-6 gap-3 items-center">
         {user.isAuthenticated ? (
           <>
-            <Switch defaultChecked onChange={showUserPins}/>
+            <Switch checked={showUserPinsOnMap} onChange={() => {
+              setShowUserPinsOnMap(!showUserPinsOnMap);
+            }}/>
             <div className='text-neutral-200'>Pokaż moje pineski</div>
           </>
         ) : (
@@ -261,64 +180,105 @@ function SearchMenu() {
 
       <div className="flex flex-col p-6 gap-3 ">
         <div className='text-neutral-200'>Wybierz firmę/usługę:</div>
-        <form>
-          <Input 
-            id="search" 
-            placeholder="Szukaj..." 
-            prefix={<SearchOutlined className='text-xl' style={{color: '#a3a3a3'}}/>} 
-            style={{paddingInlineStart: 12, gap: 8}}
-            onChange={handleSearch}
-          />
+        <Form form={form}>
+          <Form.Item name='search'>
+            <Input
+              placeholder="Szukaj..." 
+              prefix={<SearchOutlined className='text-xl' style={{color: '#a3a3a3'}}/>} 
+              style={{paddingInlineStart: 12, gap: 8}}
+              onPressEnter={(event) => {
+                event.preventDefault();
+                if (services !== null) {
+                  handleCompanySearch(form.getFieldValue([['search']]), setCompanies, services);
+                }
+              }}
+            />
+          </Form.Item>
 
           <Tabs 
             id='tab' 
-            defaultActiveKey="1"
+            activeKey={(isServicesSearchOpen) ? "2" : "1"}
+            onTabClick={(key) => {setIsServicesSearchOpen(key == "2")}}
           >
             <Tabs.TabPane 
               tab="Firmy" 
               key="1"
-              className='h-[66.3vh]'
+              className='h-[63vh]'
             >
-              <ServicesList services={companies}/>
+              <CompaniesList companies={companies}/>
             </Tabs.TabPane>
             <Tabs.TabPane 
               tab="Usługi" 
               key="2"
-              className='h-[66.3vh]'
+              className='h-[63vh]'
             >
-              <ServicesList services={services}/>
+              <CompaniesList companies={ getFilteredServices(form.getFieldValue([['search']])) }/>
             </Tabs.TabPane>
           </Tabs>
-        </form>
+        </Form>
       </div>
     </>
   );
 }
 
-function ServicesList(props: {
-  services: {
-    id: number,
-    name: string,
-    logo: string
+function CompaniesList(props: {
+  companies: {
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
   }[];
 }) {
+  const setSearchedCompany = useCallback((searchedCompany: {
+    type: string,
+    companyName: string | undefined,
+    service : {
+      id: number,
+      tagKey: string,
+      tagValue: string,
+      name: string,
+      logo: string,
+    },
+  }) => {
+    localStorage.setItem('searchedCompany', JSON.stringify(searchedCompany));
+  }, []); 
+  
   return (
     <ul className='flex flex-col divide-y divide-neutral-600 overflow-y-auto max-h-full'>
-      {props.services.map(service => (
-        <li key={service.id}>
+      {props.companies.map(company => (
+        <li key={(company.type == "company") ? company.service.id + company.companyName! : company.service.id}>
           <Link 
-            href={"/map/" + service.id} 
+            href={"/map/heatmap"} 
             className="flex flex-row gap-3 items-center p-3 text-neutral-200 hover:bg-neutral-600 transition-all hover:text-neutral-200"
+            onClick={() => setSearchedCompany(company)}
           >
-            <Image
-              className="relative"
-              src={service.logo}
+            <ImageWithDefault
+              className="relative p-1"
+              style={{'filter': 'invert(85%) sepia(87%) saturate(35%) hue-rotate(166deg) brightness(112%) contrast(80%)'}}
+              src={company.service.logo}
               alt="company logo or service icon"
-              width={40}
-              height={40}
+              width={32}
+              height={32}
               priority
+              defaultSrc='/service_icons/default.svg'
             />
-            {service.name}
+            <div className='flex flex-col gap-[2px]'>
+              {(company.type == "company") ? (
+                <>
+                  {company.companyName}
+                  <span className='text-xs text-neutral-500'>
+                    {company.service.name}
+                  </span>
+                </>
+              ) : (
+                <>{company.service.name}</>
+              )}
+            </div>
           </Link>
         </li>
       ))}
