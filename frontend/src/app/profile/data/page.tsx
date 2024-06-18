@@ -22,6 +22,7 @@ import { Select, Spin } from "antd";
 // }
 
 export default function ProfilePage() {
+  const [userId, setUserId] = useState(null);
 
   const [gender, setGender] = useState<string>("");
   const [age, setAge] = useState<number>(0);
@@ -32,14 +33,15 @@ export default function ProfilePage() {
   var UserData = {};
   const token = localStorage.getItem('token');
   const email = user.email;
-  var userId: number;
+  //var userId: number;
 
     useEffect(() => {
       const fetchUserData = async () => {
         setLoading(true);
         try {
           const id_response = await getUserId(email, token);
-          userId = await id_response;
+          const userId = id_response;
+          setUserId(userId);  // Store the userId in state
 
           const response = await getUserInfo(userId, token);
           const userInfo = await response;

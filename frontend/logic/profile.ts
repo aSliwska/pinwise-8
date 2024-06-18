@@ -70,7 +70,7 @@ export async function getUserId(email: string, token: string | null) {
 }
 
 
-export async function updateUser(id: number, token: string | null, email: string, age: number, gender: string, education: string) {
+export async function updateUser(id: number | null, token: string | null, email: string, age: number, gender: string, education: string) {
   //console.log(`deletePin?email=${email}&id=${pinId}`);
   console.log(`Updating user: ${id} with data: ${email}, ${age}, ${gender}, ${education}, `);
     try {
@@ -160,3 +160,62 @@ export async function deleteUser(id: number, token: string | null) {
       }
 }
 
+export async function updateUserMail(token: string | null, old_email: string, new_email: string, password: string) {
+  //console.log(`deletePin?email=${email}&id=${pinId}`);
+  console.log(`Updating Email from: ${old_email} to: ${new_email} with ${password}`);
+    try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_APP_URL}/change-email`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ old_email: old_email, new_email: new_email, password: password}),
+          }
+        );
+      
+        if (response.ok) {
+          const data = await response.json();
+          return "Success";
+        } 
+        else {
+          const errorMessage = await response.text(); 
+          console.log(errorMessage);  
+        }
+      } catch (error) {
+        console.log("An unexpected error occurred");
+      }
+}
+
+export async function updateUserPassword(token: string | null, email: string, password: string) {
+  //console.log(`deletePin?email=${email}&id=${pinId}`);
+  console.log(`Updating password for: ${email} new password: ${password}`);
+    try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_APP_URL}/users/change_pass`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ email: email, password: password}),
+          }
+        );
+      
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          return {is_success: "Success"};
+        } 
+        else {
+          const errorMessage = await response.text(); 
+          console.log(errorMessage);  
+        }
+      } catch (error) {
+        console.log("An unexpected error occurred");
+        console.log(error);
+      }
+}

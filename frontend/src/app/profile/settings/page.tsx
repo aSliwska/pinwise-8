@@ -12,12 +12,16 @@ import { Icon } from 'leaflet';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useAtom } from 'jotai';
 import { userAtom } from "@/components/store";
+import { updateUserMail, updateUserPassword } from "../../../../logic/profile";
 
 export default function ProfilePage() {
   const [user, setUser] = useAtom(userAtom);
   const [form_pwd] = Form.useForm();
   const [form_mail] = Form.useForm();
   const [validForm, setValidForm] = useState(false);
+
+  const [emailChangeMessage, setEmailChangeMessage] = useState<string>("");
+  const [pwdChangeMessage, setPwdChangeMessage] = useState<string>("");
 
   const checkIsValidFormPwd = () => {
     const values = form_pwd.getFieldsValue();
@@ -45,13 +49,6 @@ export default function ProfilePage() {
     router.push('/profile/logouts');
   };
 
-  // const redirectToPanel = (panel) => {
-  //   router.push({
-  //     pathname: '/panelPage',
-  //     query: { panel }
-  //   });
-  // };
-
   function NavigationEvents() {
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -67,6 +64,29 @@ export default function ProfilePage() {
   const handleLogout = (_event: any) => {
     setUser((user) => ({ ...user, isAuthenticated: false })); 
     localStorage.removeItem('token');
+  }
+
+  const handleUpdateMail = async () => {
+    const token = localStorage.getItem('token');
+    const old_email = user.email;
+    const values = form_mail.getFieldsValue();
+    const new_email = values.email;
+    const password = values.password;
+    const response = await updateUserMail(token, old_email, new_email, password);
+    if(response === "Success"){
+      setEmailChangeMessage("Successfully changed email.")
+    } 
+  }
+
+  const handleUpdatePwd = async () => {
+    const token = localStorage.getItem('token');
+    const email = user.email;
+    const values = form_pwd.getFieldsValue();
+    const password = values.newPassword;
+    const response = await updateUserPassword(token, email, password);
+    if(response?.is_success === "Success"){
+      setPwdChangeMessage("Successfully changed password.")
+    } 
   }
 
     return (
@@ -141,13 +161,15 @@ export default function ProfilePage() {
                 onClick={(e) => {
                   if (validForm) {
                     e.preventDefault();
-                    router.push('/profile/logouts?mode=EmailChangeconfirmPage');
+                    handleUpdateMail();
+                    //router.push('/profile/logouts?mode=EmailChangeconfirmPage');
                     //setMode("personalData");
                   }
                 }}
               >
                 Zatwierdź
               </Button>
+              <p>{emailChangeMessage}</p>
             </Form.Item>
           </div>
 
@@ -197,12 +219,12 @@ export default function ProfilePage() {
             <Form.Item
               //label={<label style={{ color: "white" }}>Powtórz hasło</label>}
               name="newPasswordConfirmation"
-              dependencies={["password"]}
+              dependencies={["newPassword"]}
               rules={[
                 { required: true, message: "Potwierdź nowe hasło" },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
+                    if (!value || getFieldValue("newPassword") === value) {
                       return Promise.resolve();
                     }
                     return Promise.reject("Hasła są różne. Spróbuj ponownie.");
@@ -224,6 +246,7 @@ export default function ProfilePage() {
                   if (validForm) {
                     e.preventDefault();
                     //setMode("personalData");
+                    handleUpdatePwd();
                   }
                 }}
               >
