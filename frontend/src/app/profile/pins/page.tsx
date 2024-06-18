@@ -5,43 +5,24 @@ import { Input, Button, ConfigProviderProps } from 'antd';
 import { Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
-import PinPopupContent from '@/components/map/pin';
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { useAtom } from 'jotai';
+import { userAtom } from "@/components/store";
 
+import PinCardList from "./pinCardList";
 import PinCard from 'components/PinCard';
 
 import { fetchAllUserPins } from '../../../../logic/map/pinFetching';
 
 
-
-const handleDeletePin = () => {return Promise<void>;}
-
-
-
-// function CreatePin() {
-//   return(<PinCard logoUrl="" title="My Custom Card" type="bleep" address="bloop" date_added="bap!"/>);
-// }
-
-// interface CardProps {
-//   title: string;
-//   description: string;
-//   imageUrl: string;
-// }
-
-// const Card: React.FC<CardProps> = ({ title, description, imageUrl }) => {
-//   return (
-//     <div className="card">
-//       <img src={imageUrl} alt={title} className="card-img" />
-//       <div className="card-content">
-//         <h2 className="card-title">{title}</h2>
-//         <p className="card-description">{description}</p>
-//       </div>
-//     </div>
-//   );
-// };
-
-
 export default function ProfilePage() {
+  const [user, setUser] = useAtom(userAtom);
+
+  const handleLogout = (_event: any) => {
+    setUser((user) => ({ ...user, isAuthenticated: false })); 
+    localStorage.removeItem('token');
+  }
+
     return (
       <main className="flex min-h-full min-w-full flex-col items-center justify-between color-bg-gradient-light-gray">
         <div className="flex min-h-full justify-center color-bg-gradient-dark-gray w-4/6 min-w-[500px]">
@@ -57,20 +38,16 @@ export default function ProfilePage() {
                     <li><a href="/profile/pins" className="px-3 flex items-center h-[3rem] text-center border-y-2 border-[#4a4a4a] hover:bg-[#4a4a4a] active:bg-gray-600/50">Moje pineski</a></li>
                     <li><a href="/profile/data" className="px-3 flex items-center h-[3rem] text-center border-b-2 border-[#4a4a4a] hover:bg-[#4a4a4a] active:bg-gray-600/50">Moje dane osobowe</a></li>
                     <li><a href="/profile/settings" className="px-3 flex items-center h-[3rem] text-center border-b-2 border-[#4a4a4a] hover:bg-[#4a4a4a] active:bg-gray-600/50">Ustawienia</a></li>
-                    <li><a href="" className="px-3 flex items-center h-[3rem] text-center border-b-2 border-[#4a4a4a] hover:bg-[#4a4a4a] active:bg-gray-600/50">Wyloguj</a></li>
+                    <li><a href="/map" onClick={handleLogout} className="px-3 flex items-center h-[3rem] text-center border-b-2 border-[#4a4a4a] hover:bg-[#4a4a4a] active:bg-gray-600/50">Wyloguj</a></li>
                 </ul>
                 </div>
             </div>
 
             <div className="flex-auto">
                 <h2 className="text-xl">Moje pineski</h2>
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-                <div style={{ height: '500px', overflowY: 'auto', width: '320px', padding: '10px', borderRadius: '5px', scrollbarWidth: 'none' }}>
-                  
-                  
-                  
-                </div>
-                </div>
+                
+                <PinCardList />
+
             </div>
         </div>
     </div>

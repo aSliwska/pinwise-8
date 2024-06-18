@@ -10,23 +10,12 @@ interface PinCardProps {
     type: string | undefined;
     address: string | undefined;
     date_added: Date;
-    onDelete: (email : string, token : string | null, id : number) => Promise<void>;
-    
-    // async () => {
-    //   const token = localStorage.getItem('token');
-    //   const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/deletePin`, {
-    //     method: "DELETE",
-    //     headers: {'Authorization': `Bearer ${token}`,
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({ email, password }),
-    //   });
-    // };
-    //onEdit: () => void;
+    onDelete: (id : number) => Promise<void>;
   }
 
-const PinCard = ({ logoUrl, title, type, address, date_added, onDelete } : PinCardProps) => {
+const PinCard = ({ id, logoUrl, title, type, address, date_added, onDelete } : PinCardProps) => {
   const router = useRouter();
+  console.log(title);
   return (
     <div className='bg-gray-600 rounded-lg shadow-lg mb-3'>
     <Card className="rounded-lg shadow-lg"
@@ -37,9 +26,9 @@ const PinCard = ({ logoUrl, title, type, address, date_added, onDelete } : PinCa
       </div>
 
       <div className="mb-4">
-        <p>{type}</p>
-        <p>{address}</p>
-        <p>{date_added.toLocaleDateString()}</p>
+        <p>Typ: {type}</p>
+        <p>Miejsce: {address}</p>
+        <p>Dodano: {date_added.toLocaleDateString()}</p>
       </div>
 
       <div className="flex justify-between">
@@ -51,32 +40,13 @@ const PinCard = ({ logoUrl, title, type, address, date_added, onDelete } : PinCa
         </button>
         <button
           className="text-white px-4 py-2 rounded hover:bg-red-600"
-          onClick={()=>{onDelete}}
+          onClick={()=>{onDelete(id);}}
         >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M6 18L18 6M6 6l12 12"
-            ></path>
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M3 6l3 18h12l3-18h-18zm14 16h-10l-2.5-15h15l-2.5 15zm-8-11v8h2v-8h-2zm4 0v8h2v-8h-2zm2-11v1h-6v-1h-5v3h16v-3h-5z"/>
+        </svg>
         </button>
       </div>
-      {/* <div className="bg-gradient-to-r from-gray-700 to-gray-900 text-white p-4 rounded-t-lg">
-        <h2 className="text-center font-bold">{title}</h2>
-      </div>
-      <div className="p-4">
-        <p>{type}</p>
-        <p>{address}</p>
-        <p>{date_added}</p>
-      </div> */}
     </Card>
     </div>
   );

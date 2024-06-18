@@ -5,7 +5,8 @@ import PinCard from 'components/PinCard';
 import { fetchAllUserPins } from '../../../../logic/map/pinFetching';
 import { deletePin } from '../../../../logic/profile';
 
-const PinCardList = (email : string) => {
+const PinCardList = () => {
+  const [user, setUser] = useAtom(userAtom);
     const [userPins, setUserPins] = useState<{
         id: number,
         lon: number,
@@ -28,7 +29,6 @@ const PinCardList = (email : string) => {
     
       useEffect(() => {
         const token = localStorage.getItem('token');
-        const [user, setUser] = useAtom(userAtom);
         const email = user.email;
         //const email = 'user@example.com'; // replace with the actual email
     
@@ -38,11 +38,9 @@ const PinCardList = (email : string) => {
 
     const handleDelete = async (pinId: number) => {
         const token = localStorage.getItem('token');
-        const [user, setUser] = useAtom(userAtom);
         const email = user.email;
         //const email = 'user@example.com'; // replace with the actual email
         await deletePin(email, token, pinId);
-        
         setUserPins((prevPins) => prevPins.filter(pin => pin.id !== pinId));
     };
   
@@ -57,7 +55,7 @@ const PinCardList = (email : string) => {
                     type={pin.type}
                     address={pin.address}
                     date_added={pin.lastModificationDate}
-                    onDelete={deletePin}
+                    onDelete={handleDelete}
                 />
                 ))}
             </div>

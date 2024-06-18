@@ -9,10 +9,12 @@ import { useEffect } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
-import PinPopupContent from '@/components/map/pin';
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { useAtom } from 'jotai';
+import { userAtom } from "@/components/store";
 
 export default function ProfilePage() {
+  const [user, setUser] = useAtom(userAtom);
   const [form_pwd] = Form.useForm();
   const [form_mail] = Form.useForm();
   const [validForm, setValidForm] = useState(false);
@@ -62,11 +64,14 @@ export default function ProfilePage() {
     return null
   }
 
-  
+  const handleLogout = (_event: any) => {
+    setUser((user) => ({ ...user, isAuthenticated: false })); 
+    localStorage.removeItem('token');
+  }
 
     return (
       <main className="flex min-h-full min-w-full flex-col items-center justify-between color-bg-gradient-light-gray">
-        <div className="flex min-h-full justify-center color-bg-gradient-dark-gray w-4/6 min-w-[500px]">
+        <div className="flex min-h-full justify-center color-bg-gradient-dark-gray w-4/6 min-w-[500px] overflow-hidden">
           <div className="pl-10 flex min-h-full w-9/12 min-w-[500px] flex-col">
           <div className="p-4 pt-10 text-5xl font-bold items-left">Mój profil</div>
           <div className="mu-10 h-full flexitems-center justify-center">
@@ -79,7 +84,7 @@ export default function ProfilePage() {
                     <li><a href="/profile/pins" className="px-3 flex items-center h-[3rem] text-center border-y-2 border-[#4a4a4a] hover:bg-[#4a4a4a] active:bg-gray-600/50">Moje pineski</a></li>
                     <li><a href="/profile/data" className="px-3 flex items-center h-[3rem] text-center border-b-2 border-[#4a4a4a] hover:bg-[#4a4a4a] active:bg-gray-600/50">Moje dane osobowe</a></li>
                     <li><a href="/profile/settings" className="px-3 flex items-center h-[3rem] text-center border-b-2 border-[#4a4a4a] hover:bg-[#4a4a4a] active:bg-gray-600/50">Ustawienia</a></li>
-                    <li><a href="#" className="px-3 flex items-center h-[3rem] text-center border-b-2 border-[#4a4a4a] hover:bg-[#4a4a4a] active:bg-gray-600/50">Wyloguj</a></li>
+                    <li><a href="/map" onClick={handleLogout} className="px-3 flex items-center h-[3rem] text-center border-b-2 border-[#4a4a4a] hover:bg-[#4a4a4a] active:bg-gray-600/50">Wyloguj</a></li>
                 </ul>
                 </div>
             </div>
