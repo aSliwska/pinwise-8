@@ -82,7 +82,7 @@ export async function updateUser(id: number | null, token: string | null, email:
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`,
             },
-            body: JSON.stringify({ email: email, gender: gender, age: age, active: true, education: education, isAdmin: false }),
+            body: JSON.stringify({ email: email, gender: gender, age: Number(age), active: true, education: education, isAdmin: false }),
           }
         );
       
@@ -177,8 +177,8 @@ export async function updateUserMail(token: string | null, old_email: string, ne
         );
       
         if (response.ok) {
-          const data = await response.json();
-          return "Success";
+          //const data = await response.json();
+          return {is_success: "Success"};
         } 
         else {
           const errorMessage = await response.text(); 
@@ -186,10 +186,11 @@ export async function updateUserMail(token: string | null, old_email: string, ne
         }
       } catch (error) {
         console.log("An unexpected error occurred");
+        console.log(error);
       }
 }
 
-export async function updateUserPassword(token: string | null, email: string, password: string) {
+export async function updateUserPassword(token: string | null, email: string, password: string, old_password: string) {
   //console.log(`deletePin?email=${email}&id=${pinId}`);
   console.log(`Updating password for: ${email} new password: ${password}`);
     try {
@@ -201,13 +202,13 @@ export async function updateUserPassword(token: string | null, email: string, pa
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`,
             },
-            body: JSON.stringify({ email: email, password: password}),
+            body: JSON.stringify({ email: email, password: password, old_password: old_password}),
           }
         );
       
         if (response.ok) {
-          const data = await response.json();
-          console.log(data);
+          //const data = await response;
+          //console.log(data);
           return {is_success: "Success"};
         } 
         else {

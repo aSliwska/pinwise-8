@@ -49,23 +49,12 @@ export default function ProfilePage() {
     router.push('/profile/logouts');
   };
 
-  function NavigationEvents() {
-    const pathname = usePathname()
-    const searchParams = useSearchParams()
-   
-    useEffect(() => {
-      const url = `${pathname}?${searchParams}`
-      console.log(url)
-    }, [pathname, searchParams])
-   
-    return null
-  }
-
   const handleLogout = (_event: any) => {
     setUser((user) => ({ ...user, isAuthenticated: false })); 
     localStorage.removeItem('token');
   }
 
+  var updatedUser = {...user};
   const handleUpdateMail = async () => {
     const token = localStorage.getItem('token');
     const old_email = user.email;
@@ -73,9 +62,21 @@ export default function ProfilePage() {
     const new_email = values.email;
     const password = values.password;
     const response = await updateUserMail(token, old_email, new_email, password);
-    if(response === "Success"){
-      setEmailChangeMessage("Successfully changed email.")
-    } 
+    console.log(response);
+    if(response?.is_success === "Success"){
+      setEmailChangeMessage("Pomyślnie zmieniono email.")
+      console.log(new_email);
+      console.log(user);
+
+      updatedUser = { ...user, email: new_email };
+      console.log(updatedUser);
+      setUser(updatedUser);
+      
+      console.log(user);
+    } else {
+      setEmailChangeMessage("Wystąpił błąd.")
+    }
+    setUser((prevUser) => ({ ...prevUser, email: new_email, }));
   }
 
   const handleUpdatePwd = async () => {
@@ -83,10 +84,20 @@ export default function ProfilePage() {
     const email = user.email;
     const values = form_pwd.getFieldsValue();
     const password = values.newPassword;
-    const response = await updateUserPassword(token, email, password);
-    if(response?.is_success === "Success"){
-      setPwdChangeMessage("Successfully changed password.")
-    } 
+    const old_password = values.oldPassword;
+    try {
+      const response = await updateUserPassword(token, email, password, old_password);
+      console.log('Response:', response); // Log response to inspect its structure
+  
+      if (response?.is_success === "Success") {
+        setPwdChangeMessage("Pomyślnie zmieniono email.");
+      } else {
+        setPwdChangeMessage("Wystąpił błąd.");
+      }
+    } catch (error) {
+      console.error('Error updating user mail:', error);
+      setPwdChangeMessage("Wystąpił błąd. Spróbuj ponownie później.");
+    }
   }
 
     return (
@@ -162,6 +173,10 @@ export default function ProfilePage() {
                   if (validForm) {
                     e.preventDefault();
                     handleUpdateMail();
+                    handleLogout(null);
+                    setUser((user) => ({ ...user, isAuthenticated: false })); 
+                    localStorage.removeItem('token');
+                    router.push('/map');
                     //router.push('/profile/logouts?mode=EmailChangeconfirmPage');
                     //setMode("personalData");
                   }
@@ -252,6 +267,7 @@ export default function ProfilePage() {
               >
                 Zatwierdź
               </Button>
+              <p>{pwdChangeMessage}</p>
             </Form.Item>
           </div>
         </div>
