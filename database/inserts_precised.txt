@@ -1,0 +1,35 @@
+INSERT INTO pinwise.pin (user_id, coordinateX, coordinateY, adres, id_serwis, modification_date, company_name, type_id) VALUES 
+(1, 19.7853, 49.9702, '123 Main St', (SELECT id FROM pinwise.service WHERE tag_key = 'amenity' AND tag_value='atm'), '2022-10-16', NULL, 2),
+(2, 20.2245, 50.1274, '456 Elm St', (SELECT id FROM pinwise.service WHERE tag_key = 'amenity' AND tag_value='atm'), '2022-11-16', NULL, 2),
+(3, 19.7953, 49.9708, '789 Oak St', (SELECT id FROM pinwise.service WHERE tag_key = 'amenity' AND tag_value='atm'), '2023-03-20', NULL, 2),
+(4, 19.8853, 49.9804, '321 Pine St', (SELECT id FROM pinwise.service WHERE tag_key = 'amenity' AND tag_value='atm'), '2023-05-23', NULL, 2),
+(5, 19.9853, 49.9872, '567 Maple St', (SELECT id FROM pinwise.service WHERE tag_key = 'amenity' AND tag_value='atm'), '2023-07-23', NULL, 2),
+(6, 19.9053, 49.9882, '890 Cherry St', (SELECT id FROM pinwise.service WHERE tag_key = 'amenity' AND tag_value='atm'),'2023-08-25', NULL, 2),
+(7, 19.8003, 49.9892, '987 Walnut St', (SELECT id FROM pinwise.service WHERE tag_key = 'amenity' AND tag_value='atm'), '2023-09-30', NULL, 2),
+(8, 19.8500, 49.9902, '654 Birch St', (SELECT id FROM pinwise.service WHERE tag_key = 'amenity' AND tag_value='atm'), '2023-11-12', NULL, 2),
+(9, 19.9553, 49.9912, '321 Cedar St', (SELECT id FROM pinwise.service WHERE tag_key = 'amenity' AND tag_value='atm'), '2023-12-01', NULL, 2),
+(10, 19.9953, 49.9920, '876 Pine St', (SELECT id FROM pinwise.service WHERE tag_key = 'amenity' AND tag_value='atm'), '2024-05-30', NULL, 2);
+
+INSERT INTO pinwise.pin (user_id, coordinateX, coordinateY, adres, id_serwis, modification_date, company_name, type_id) VALUES 
+(1, 19.9852, 49.9932, '123 Main St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2023-10-14', 'Biedronka', 1),
+(2, 20.9445, 50.1280, '456 Elm St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2023-11-18', 'Biedronka', 1),
+(3, 19.9343, 49.9942, '789 Oak St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2023-07-10', 'Biedronka', 1),
+(4, 19.9254, 49.9952, '321 Pine St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2023-12-30', 'Biedronka', 1),
+(5, 19.9156, 49.9962, '567 Maple St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2023-12-30', 'Biedronka', 1),
+(6, 19.9057, 49.9975, '890 Cherry St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2024-01-29', 'Biedronka', 1),
+(7, 19.8955, 49.9959, '987 Walnut St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2024-01-14', 'Biedronka', 1),
+(8, 19.8854, 49.9755, '654 Birch St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2024-06-10', 'Biedronka', 1),
+(9, 19.8952, 50.3002, '321 Cedar St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2024-04-12', 'Biedronka', 1),
+(10, 19.8351, 50.0000, '876 Pine St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2024-04-25', 'Biedronka', 1),
+(1, 19.8853, 49.9760, '123 Main St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2022-10-16', 'Biedronka', 1),
+(2, 20.2215, 50.1204, '456 Elm St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2022-11-16', 'Biedronka', 1),
+(3, 19.7953, 49.9750, '789 Oak St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2023-03-20', 'Biedronka', 1),
+(4, 19.9860, 49.9824, '321 Pine St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2023-05-23', 'Biedronka', 1),
+(5, 19.0853, 49.9899, '567 Maple St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2023-07-23', 'Biedronka', 1),
+(6, 19.9003, 49.9992, '890 Cherry St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'),'2023-08-25', 'Biedronka', 1),
+(7, 19.9000, 49.9910, '987 Walnut St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2023-09-30', 'Biedronka', 1),
+(8, 19.8505, 49.9947, '654 Birch St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2023-11-12', 'Biedronka', 1),
+(9, 19.9560, 49.9901, '321 Cedar St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2023-12-01', 'Biedronka', 1),
+(10, 19.9975, 49.9923, '876 Pine St', (SELECT id FROM pinwise.service WHERE tag_key = 'shop' AND tag_value='supermarket'), '2024-05-30', 'Biedronka', 1);
+
+SELECT * FROM pinwise.pin;
