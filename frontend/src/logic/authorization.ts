@@ -38,7 +38,10 @@ export const login = async (
 export const register = async (
   username: string,
   email: string,
-  password: string
+  password: string,
+  gender: string,
+  education: string,
+  age: number
 ) => {
   try {
     const response = await fetch(
@@ -48,7 +51,7 @@ export const register = async (
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password, gender, education, age: Number(age) }),
       }
     );
 

@@ -129,6 +129,7 @@ export async function fetchAllUserPins(email: string, token: string | null, setU
   
     if (response.ok) {
       const data = await response.json();
+      console.log(data);
       
       data.forEach((element: any) => {
         pins.push({

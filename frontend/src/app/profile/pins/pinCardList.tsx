@@ -48,15 +48,17 @@ const PinCardList = () => {
         <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
             <div style={{ height: '500px', overflowY: 'auto', width: '320px', padding: '10px', borderRadius: '5px', scrollbarWidth: 'none' }}>
                 {userPins.map(pin => (
+                  <div key={pin.id}>
                 <PinCard
                     id={pin.id}
                     logoUrl={pin.service.logo}
-                    title={pin.companyName}
-                    type={pin.type}
+                    title={pin.companyName !== "" ? pin.companyName : pin.service.name}
+                    type={pin.type === "service" ? "Serwis" : "Firma"}
                     address={pin.address}
                     date_added={pin.lastModificationDate}
                     onDelete={handleDelete}
                 />
+                </div>
                 ))}
             </div>
         </div>

@@ -11,12 +11,12 @@ export default function RegisterPage() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [gender, setGender] = useState<string>("Wybierz");
-  const [age, setAge] = useState<string>("Wybierz");
+  const [age, setAge] = useState<number>(0);
   const [education, setEducation] = useState<string>("Wybierz");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async () => {
-    const response: any = await register(username, email, password);
+    const response: any = await register(username, email, password, gender, education, age);
     if (response.success) {
       setMode("success");
       setErrorMessage(null);

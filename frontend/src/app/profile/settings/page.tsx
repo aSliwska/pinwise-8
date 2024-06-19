@@ -174,9 +174,9 @@ export default function ProfilePage() {
                     e.preventDefault();
                     handleUpdateMail();
                     handleLogout(null);
-                    setUser((user) => ({ ...user, isAuthenticated: false })); 
-                    localStorage.removeItem('token');
-                    router.push('/map');
+                    //setUser((user) => ({ ...user, isAuthenticated: false })); 
+                    //localStorage.removeItem('token');
+                    //router.push('/map');
                     //router.push('/profile/logouts?mode=EmailChangeconfirmPage');
                     //setMode("personalData");
                   }

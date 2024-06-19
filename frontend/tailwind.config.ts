@@ -16,6 +16,7 @@ const config: Config = {
     },
     colors:{
       'btn': '#4ccaae',
+      'btnr': '#db3d3d',
     },
   },
   plugins: [],

@@ -39,11 +39,11 @@ const PinCard = ({ id, logoUrl, title, type, address, date_added, onDelete } : P
           Pokaż na mapie
         </button>
         <button
-          className="text-white px-4 py-2 rounded hover:bg-red-600"
+          className="px-4 py-2 rounded bg-red-500 !important fuck-you bg-red-200 bg-red bg-red-300 bg-red-600 bg-green-100 bg-btnr"
           onClick={()=>{onDelete(id);}}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M3 6l3 18h12l3-18h-18zm14 16h-10l-2.5-15h15l-2.5 15zm-8-11v8h2v-8h-2zm4 0v8h2v-8h-2zm2-11v1h-6v-1h-5v3h16v-3h-5z"/>
+          <svg className="w-5 h-5 fill-current text-lightgray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M3 6l3 18h12l3-18h-18zm14 16h-10l-2.5-15h15l-2.5 15zm-8-11v8h2v-8h-2zm4 0v8h2v-8h-2zm2-11v1h-6v-1h-5v3h16v-3h-5z" fill="lightgray"/>
         </svg>
         </button>
       </div>

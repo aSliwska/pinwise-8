@@ -24,7 +24,7 @@ export default function ProfilePage() {
   }
 
     return (
-      <main className="flex min-h-full min-w-full flex-col items-center justify-between color-bg-gradient-light-gray">
+      <main className="flex min-h-full min-w-full flex-col items-center justify-between color-bg-gradient-light-gray overflow-hidden">
         <div className="flex min-h-full justify-center color-bg-gradient-dark-gray w-4/6 min-w-[500px]">
           <div className="pl-10 flex min-h-full w-9/12 min-w-[500px] flex-col">
           <div className="p-4 pt-10 text-5xl font-bold items-left">Mój profil</div>

@@ -29,7 +29,7 @@ export default function RootLayout({
         <ThemeProvider font={inter}>
           <StoreProvider>
             <AntdRegistry>
-              <div className="flex flex-col h-screen w-screen max-h-screen">
+              <div className="flex flex-col h-screen w-screen max-h-screen overflow-hidden">
                 <div className="flex-none w-screen z-10">
                   <TopBar />
                 </div>

@@ -27,6 +27,12 @@ export default function TopBar() {
   const pathname = usePathname();
   const router = useRouter();
 
+  const handleLogout = (_event: any) => {
+    setUser((user) => ({ ...user, isAuthenticated: false })); 
+    localStorage.removeItem('token');
+    router.push('/map');
+  }
+
   return (
     <div className="flex w-screen h-12 pr-5 pl-2 justify-between items-center bg-[#2E2E2E] border-[#282828] border-b">
       <div className="flex flex-grow basis-0 h-full justify-start items-center">
@@ -84,8 +90,7 @@ export default function TopBar() {
             <Button
               type="primary"
               onClick={() => {
-                setUser((user) => ({ ...user, isAuthenticated: false }));
-                localStorage.removeItem("token");
+                handleLogout(null);
               }}
               className="flex flex-row items-center"
             >
