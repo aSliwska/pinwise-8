@@ -27,7 +27,7 @@ const PersonalDataPanel = ({
         </Button>
       </div>
       <form>
-        <div className="flex flex-col items-center justify-between gap-12 rounded-lg text-white">
+        <div className="flex flex-col items-center justify-between gap-12 rounded-lg text-verywhite font-verywhite">
           <div className="text-5xl font-bold text-center">Jeżeli chcesz, podaj<br/>swoje dane osobowe</div>
 
           <span className="text-xl text-neutral-400 text-center">Dodaj swoje dane, aby inwestorzy mieli lepsze pojęcie<br/>o ich potencjalnych klientach.</span>

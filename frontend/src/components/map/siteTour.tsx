@@ -47,7 +47,7 @@ export function TourWelcome(props: {
   }, []);
 
   return (
-    <div className='flex flex-col rounded-lg bg-white p-8 gap-8 text-neutral-600'>
+    <div className='flex flex-col rounded-lg bg-verywhite p-8 gap-8 text-neutral-600'>
       <span className='font-bold text-4xl'>Pierwszy raz na PinWise?</span>
       <span className='text-neutral-400 text-lg text-center font-light'>
         Tutaj możesz zobaczyć zapotrzebowanie na <br/> usługi w różnych rejonach twojego miasta.

@@ -55,7 +55,7 @@ const RegisterPanel = ({
         initialValues={{ remember: true }}
         onFieldsChange={checkIsValidForm} // Trigger validation check on any field change
       >
-        <div className="flex flex-col items-center justify-between gap-12 p-4 rounded-lg text-white">
+        <div className="flex flex-col items-center justify-between gap-12 p-4 rounded-lg text-verywhite font-verywhite">
           <div className="text-5xl font-bold">Zarejestruj się</div>
 
           <div className="w-full">

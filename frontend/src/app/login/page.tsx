@@ -40,7 +40,7 @@ export default function LoginPage() {
           <div className="text-red-500 mb-2">{errorMessage}</div>
         )}
         <Form style={{ minWidth: "60%" }} onFinish={onFinish}>
-          <div className="flex flex-col items-center justify-between gap-12 p-4 rounded-lg text-white">
+          <div className="flex flex-col items-center justify-between gap-12 p-4 rounded-lg text-verywhite font-verywhite">
             <div className="text-5xl font-bold">Zaloguj się</div>
 
             <div className="w-full">

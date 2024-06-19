@@ -17,6 +17,11 @@ const config: Config = {
     colors:{
       'btn': '#4ccaae',
       'btnr': '#db3d3d',
+      'verywhite': '#fff',
+      'white': '#fff',
+      'neutral-600': '#525252',
+      'neutral-200': '#E5E5E5',
+      'neutral-300': '#d4d4d4',
     },
   },
   plugins: [],
