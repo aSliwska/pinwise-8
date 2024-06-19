@@ -1,7 +1,7 @@
 import { Button, Select } from "antd";
 
 interface PersonalDataPanelProps {
-  setAge: (age: number) => void;
+  setAge: (age: string) => void;
   setMode: (mode: string) => void;
   setGender: (gender: string) => void;
   handleSubmit: () => void;
@@ -54,14 +54,14 @@ const PersonalDataPanel = ({
                   <Select
                     className="w-full"
                     onChange={(value) => setAge(value)}
-                    defaultValue={0}
+                    defaultValue={"Wybierz"}
                   >
-                    <Select.Option value="18">&lt; 18</Select.Option>
-                    <Select.Option value="24">18-25</Select.Option>
-                    <Select.Option value="35">26-31</Select.Option>
-                    <Select.Option value="45">32-47</Select.Option>
-                    <Select.Option value="55">48-61</Select.Option>
-                    <Select.Option value="60">&gt; 62</Select.Option>
+                    <Select.Option value={"18-"}>&lt; 18</Select.Option>
+                    <Select.Option value="18-30">18-25</Select.Option>
+                    <Select.Option value="30-40">26-31</Select.Option>
+                    <Select.Option value="40-50">32-47</Select.Option>
+                    <Select.Option value="50-60">48-61</Select.Option>
+                    <Select.Option value="60+">&gt; 62</Select.Option>
                   </Select>
                 </td>
               </tr>
