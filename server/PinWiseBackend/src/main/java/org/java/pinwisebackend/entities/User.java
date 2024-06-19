@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
+import org.java.pinwisebackend.DTOs.SignUpDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collection;
 import java.util.List;
@@ -63,6 +65,16 @@ public class User implements UserDetails {
         this.email = email;
         this.username = login;
         this.password = password;
+    }
+
+    public User(SignUpDto data)
+    {
+        this.email = data.email();
+        this.username = data.username();
+        this.password = new BCryptPasswordEncoder().encode(data.password());
+        this.gender = data.gender();
+        this.education = data.education();
+        this.age = data.age();
     }
 
     @Override

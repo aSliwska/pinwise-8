@@ -1,6 +1,7 @@
 package org.java.pinwisebackend.services;
 
 import com.auth0.jwt.exceptions.InvalidClaimException;
+import com.auth0.jwt.exceptions.MissingClaimException;
 import org.java.pinwisebackend.DTOs.SignUpDto;
 import org.java.pinwisebackend.entities.User;
 import org.java.pinwisebackend.entities.PasswdResetToken;
@@ -36,9 +37,11 @@ public class AuthService implements UserDetailsService {
         if(repository.findByUsername(data.username()) != null)
             throw new InvalidClaimException("Nazwa jest już zajęta");
 
+        if(data.password().length() == 0 || data.username().length() == 0 || data.email().length() == 0)
+            throw new InvalidClaimException("Missing required data");
 
-        String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
-        User newUser = new User(data.email(),data.username(), encryptedPassword);
+
+        User newUser = new User(data);
         return repository.save(newUser);
     }
 
