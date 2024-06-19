@@ -83,6 +83,10 @@ public class MainController {
     ResponseEntity<String> updatePassword(@RequestBody Map<String, Object> data){
         User user = repository.findByEmail((String) data.get("email"));
 
+
+        if(!new BCryptPasswordEncoder().matches((String) data.get("old_password"),user.getPassword()))
+            return new ResponseEntity<>("Podano złe hasło",HttpStatus.BAD_REQUEST);
+
         user.setPassword(new BCryptPasswordEncoder().encode((String) data.get("password")));
 
         repository.save(user);
@@ -106,7 +110,8 @@ public class MainController {
         if(user == null)
             return new ResponseEntity<>("Podano zły adres email",HttpStatus.BAD_REQUEST);
 
-        if(!user.getPassword().equals(json.get("password").asText()))
+
+        if(!new BCryptPasswordEncoder().matches(json.get("password").asText(),user.getPassword()))
             return new ResponseEntity<>("Podano złe hasło",HttpStatus.BAD_REQUEST);
 
         user.setEmail(json.get("new_email").asText());
