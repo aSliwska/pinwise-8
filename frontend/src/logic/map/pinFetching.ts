@@ -41,12 +41,17 @@ export async function fetchAllServiceTypes(setServices : Dispatch<SetStateAction
     if (response.ok) {
       const data = await response.json(); 
 
+      //console.log(data);
+
       data.forEach((element:{
         id: number,
         name: string,
         tagKey: string,
         tagValue: string,
       }) => {
+        console.log((iconFiles.has(element.tagKey + "/" + element.tagValue)) ? 
+        "/service_icons/" + element.tagKey + "/" + element.tagValue + ".svg" : 
+        "/service_icons/default.svg");
         services.push({
           type: "service",
           companyName: undefined,

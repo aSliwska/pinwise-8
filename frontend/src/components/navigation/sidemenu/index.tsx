@@ -39,6 +39,8 @@ function HeatmapMenu() {
   const [showUserPinsOnMap, setShowUserPinsOnMap] = useAtom(showUserPinsOnMapAtom);
   const setTimePeriodForPinDisplay = useSetAtom(timePeriodForPinDisplayAtom);
 
+  console.log(company);
+
   return (
     <>
       <div className='flex flex-col p-6 gap-3'>

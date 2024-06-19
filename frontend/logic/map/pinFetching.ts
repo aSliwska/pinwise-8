@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { getIconFileList } from "./iconReader";
+import { getIconFileList } from "../../src/logic/map/iconReader";
 
 
 export async function fetchAllServiceTypes(setServices : Dispatch<SetStateAction<{
@@ -129,9 +129,12 @@ export async function fetchAllUserPins(email: string, token: string | null, setU
   
     if (response.ok) {
       const data = await response.json();
-      console.log(data);
+      
       
       data.forEach((element: any) => {
+        console.log((iconFiles.has(element.service.tagKey + "/" + element.service.tagValue)) ? 
+            "/service_icons/" + element.service.tagKey + "/" + element.service.tagValue + ".svg" : 
+            "/service_icons/default.svg");
         pins.push({
           id: element.id,
           lon: element.coordinateX,
